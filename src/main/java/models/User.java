@@ -1,15 +1,43 @@
 package models;
 
-import javafx.application.Application;
-
 public class User {
+    public String id;
+    public String name;
+    public String email;
+    public String role;
+    /** "active" or "disabled" (React parity) */
+    public String status;
+    public String initials;
+    public String color;
+    public String discordId;
+    public int inProgress;
+    public int resolved;
+    public int closed;
+    public int reviewed;
+    public int approved;
 
-    private Application app;
+    public User(String id, String name, String email, String role, String status, String initials, String color,
+                String discordId, int inProgress, int resolved, int closed, int reviewed, int approved) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.status = status;
+        this.initials = initials;
+        this.color = color;
+        this.discordId = discordId != null ? discordId : "";
+        this.inProgress = inProgress;
+        this.resolved = resolved;
+        this.closed = closed;
+        this.reviewed = reviewed;
+        this.approved = approved;
+    }
 
-    private String user_id;
-    public String usernmae;
-    public UserRole role;
+    public boolean isActive() {
+        return "active".equalsIgnoreCase(status);
+    }
 
-    public User(){}
-
+    public String displayStatus() {
+        return "active".equalsIgnoreCase(status) ? "Active" : "Disabled";
+    }
 }

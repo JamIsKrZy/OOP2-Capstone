@@ -1,0 +1,85 @@
+package pages.create_ticket;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import models.Ticket;
+import models.User;
+import workers.MockDataProvider;
+import workers.SessionManager;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class CreateTicketController {
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+
+    @FXML private TextField txtTitle;
+    @FXML private TextArea txtDesc;
+    @FXML private ComboBox<String> comboCategory, comboPriority, comboStatus;
+
+    @FXML
+    public void initialize() {
+        comboCategory.getItems().addAll("Bug", "Feature", "Enhancement", "Documentation");
+        comboPriority.getItems().addAll("Low", "Medium", "High", "Critical");
+        comboStatus.getItems().addAll("Open", "In Progress", "Pending QA", "Approved");
+
+        comboCategory.setValue("Bug");
+        comboPriority.setValue("Medium");
+        comboStatus.setValue("Open");
+    }
+
+    @FXML
+    private void handleCancel() {
+        Stage stage = (Stage) txtTitle.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    private void handleCreate() {
+        User creator = SessionManager.getLoggedUser();
+        if (creator == null) {
+            handleCancel();
+            return;
+        }
+
+        String title = txtTitle.getText() != null ? txtTitle.getText().trim() : "";
+        if (title.isEmpty()) {
+            return;
+        }
+
+        String status = comboStatus.getValue() != null ? comboStatus.getValue() : "Open";
+        String desc = txtDesc.getText() != null ? txtDesc.getText().trim() : "";
+        String today = LocalDate.now().format(DATE_FMT);
+
+        String id = MockDataProvider.nextTicketId();
+        Ticket t = new Ticket(
+                id,
+                title,
+                comboCategory.getValue(),
+                status,
+                comboPriority.getValue(),
+                null, null, "Unassigned", "N/A",
+                desc,
+                today,
+                creator.name,
+                today,
+                "url",
+                creator.id,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if ("In Progress".equals(status)) {
+            t.assignedToId = creator.id;
+        }
+
+        MockDataProvider.addTicket(t);
+        handleCancel();
+    }
+}
