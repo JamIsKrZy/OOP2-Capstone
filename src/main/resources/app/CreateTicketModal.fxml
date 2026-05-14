@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" styleClass="modal-window" prefWidth="550" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.create_ticket.CreateTicketController">
+    <HBox alignment="TOP_RIGHT">
+        <Button text="✕" onAction="#handleCancel" style="-fx-background-color: transparent; -fx-font-size: 20; -fx-cursor: hand;"/>
+    </HBox>
+    <VBox spacing="5">
+        <Label text="Create Ticket" styleClass="modal-title"/>
+        <Label text="Fill in the details to add a new ticket." styleClass="modal-subtitle"/>
+    </VBox>
+    <VBox spacing="10">
+        <Label text="Title" styleClass="form-label"/>
+        <TextField fx:id="txtTitle" promptText="e.g. Login issue" styleClass="text-input-field"/>
+    </VBox>
+    <VBox spacing="10">
+        <Label text="Description" styleClass="form-label"/>
+        <TextArea fx:id="txtDesc" promptText="Describe the issue..." prefHeight="100" styleClass="text-input-field" wrapText="true"/>
+    </VBox>
+    <HBox spacing="15">
+        <ComboBox fx:id="comboCategory" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="text-input-field"/>
+        <ComboBox fx:id="comboPriority" maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="text-input-field"/>
+    </HBox>
+    <ComboBox fx:id="comboStatus" maxWidth="Infinity" styleClass="text-input-field"/>
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#handleCancel" styleClass="btn, btn-cancel"/>
+        <Button text="Create Ticket" onAction="#handleCreate" styleClass="btn, btn-success" style="-fx-background-color: #059669;"/>
+    </HBox>
+</VBox>

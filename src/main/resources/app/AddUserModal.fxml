@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" styleClass="modal-window" prefWidth="500" stylesheets="@styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pages.add_user.AddUserController">
+
+    <HBox alignment="TOP_RIGHT">
+        <Button text="✕" onAction="#handleCancel" style="-fx-background-color: transparent; -fx-font-size: 20; -fx-cursor: hand;"/>
+    </HBox>
+
+    <VBox spacing="5">
+        <Label text="Add User" styleClass="modal-title"/>
+        <Label text="Create a new user account and assign a role." styleClass="modal-subtitle"/>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Full Name" styleClass="form-label"/>
+        <TextField fx:id="txtName" promptText="e.g. John Doe" styleClass="text-input-field"/>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Email" styleClass="form-label"/>
+        <TextField fx:id="txtEmail" promptText="e.g. john@example.com" styleClass="text-input-field"/>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Password (demo login)" styleClass="form-label"/>
+        <PasswordField fx:id="txtPassword" promptText="Choose a password for demo login" styleClass="text-input-field"/>
+    </VBox>
+
+    <VBox spacing="12">
+        <Label text="Role" styleClass="form-label"/>
+
+        <HBox fx:id="boxPM" spacing="15" alignment="CENTER_LEFT" styleClass="role-option">
+            <RadioButton fx:id="rbPM" text="Project Manager">
+                <toggleGroup><ToggleGroup fx:id="roleGroup"/></toggleGroup>
+            </RadioButton>
+            <Label text="(Full Access)" style="-fx-text-fill: #9ca3af;"/>
+        </HBox>
+
+        <HBox fx:id="boxDev" spacing="15" alignment="CENTER_LEFT" styleClass="role-option, role-option-selected">
+            <RadioButton fx:id="rbDev" text="Developer" toggleGroup="$roleGroup" selected="true"/>
+            <Label text="(Claim &amp; Resolve)" style="-fx-text-fill: #9ca3af;"/>
+        </HBox>
+
+        <HBox fx:id="boxQA" spacing="15" alignment="CENTER_LEFT" styleClass="role-option">
+            <RadioButton fx:id="rbQA" text="QA" toggleGroup="$roleGroup"/>
+            <Label text="(Review &amp; Approve)" style="-fx-text-fill: #9ca3af;"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 20 0 0 0;">
+        <Button text="Cancel" onAction="#handleCancel" styleClass="btn, btn-cancel"/>
+        <Button text="Add User" onAction="#handleCreate" styleClass="btn, btn-primary"/>
+    </HBox>
+</VBox>

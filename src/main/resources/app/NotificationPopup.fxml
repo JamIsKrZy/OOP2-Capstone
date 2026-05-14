@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="popupContent" spacing="20" styleClass="modal-window" prefWidth="550" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.notification_popup.NotificationPopupController">
+     <HBox alignment="TOP_RIGHT">
+         <Button fx:id="btnClose" text="✕" onAction="#handleClose" style="-fx-background-color: transparent; -fx-font-size: 20; -fx-cursor: hand;"/>
+     </HBox>
+     <VBox spacing="5">
+         <Label fx:id="headerTitle" text="Notifications" styleClass="modal-title"/>
+         <Label text="Your recent updates" styleClass="modal-subtitle"/>
+     </VBox>
+     <VBox fx:id="notificationList"
+         spacing="10"
+         style="-fx-padding: 5 0 0 0; -fx-max-height: 300;" />
+     <HBox spacing="15" alignment="CENTER_RIGHT">
+         <Button text="Clear All" styleClass="btn, btn-cancel"/>
+         <Button text="Mark All Read" styleClass="btn, btn-success" style="-fx-background-color: #059669;"/>
+     </HBox>
+</VBox>
