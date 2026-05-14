@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 public class User {
     public String userId;
     public String username;
@@ -25,4 +27,23 @@ public class User {
     public String toString() {
         return String.format("%s (%s) - Dev: %d | QA: %d", username, roleName, devScore, qaScore);
     }
+
+
+
+    public static List<User> getUsers(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    // get updated data
+    public void fetch(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    // push to server current changes
+    public void push(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+
+
 }

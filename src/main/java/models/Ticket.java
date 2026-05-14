@@ -89,4 +89,21 @@ public class Ticket {
         public void setDate_added(String date_added) { this.date_added = date_added; }
         public void setTicketId(String ticketId) { this.ticketId = ticketId; }
 
+    public static List<Ticket> getTickets(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
     }
+
+    public static Ticket getTicket(int id){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    public void push(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    public void fetch(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+
+}

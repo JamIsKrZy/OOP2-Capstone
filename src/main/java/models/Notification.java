@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 public class Notification {
     public String title;
     public String subtitle;
@@ -11,5 +13,11 @@ public class Notification {
         this.subtitle = subtitle;
         this.description = description;
         this.type = type;
-     }
+    }
+
+    public static List<Notification> getNotifications(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+
 }
