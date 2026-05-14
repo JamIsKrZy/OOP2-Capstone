@@ -1,15 +1,49 @@
 package models;
 
-import javafx.application.Application;
+import java.util.List;
 
 public class User {
+    public String userId;
+    public String username;
+    public String roleName;
+    public int devScore;
+    public int qaScore;
 
-    private Application app;
+    public User(String userId, String username, String roleName, int devScore, int qaScore) {
+        this.userId = userId;
+        this.username = username;
+        this.roleName = roleName;
+        this.devScore = devScore;
+        this.qaScore = qaScore;
+    }
 
-    private String user_id;
-    public String usernmae;
-    public UserRole role;
+    public String getUserId() { return userId; }
+    public String getUsername() { return username; }
+    public String getRoleName() { return roleName; }
+    public int getDevScore() { return devScore; }
+    public int getQaScore() { return qaScore; }
 
-    public User(){}
+    @Override
+    public String toString() {
+        return String.format("%s (%s) - Dev: %d | QA: %d", username, roleName, devScore, qaScore);
+    }
+
+
+
+    public static List<User> getUsers(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    // get updated data
+    public void fetch(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+    // push to server current changes
+    public void push(){
+        throw new UnsupportedOperationException("Not yet Implemented!");
+    }
+
+
 
 }

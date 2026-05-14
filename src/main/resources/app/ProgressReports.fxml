@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="25" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.report.ProgressReportsController">
+    <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5"><Label text="Progress Reports" styleClass="board-header-title"/><Label text="Track team performance and contributions" styleClass="board-header-subtitle"/></VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="0">
+            <Button fx:id="btnDevToggle" text="Developers" styleClass="toggle-btn, toggle-group-left" onAction="#showDevs"/>
+            <Button fx:id="btnQAToggle" text="QA" styleClass="toggle-btn, toggle-group-right" onAction="#showQA"/>
+        </HBox>
+    </HBox>
+    <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="reportsContainer" spacing="25"/></ScrollPane>
+</VBox>

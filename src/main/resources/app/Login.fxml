@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.geometry.Insets?>
+
+<StackPane styleClass="login-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.login.LoginController">
+
+    <!-- Centered Card -->
+    <HBox maxWidth="1100" maxHeight="650" styleClass="login-card">
+
+        <!-- LEFT SIDE: FORM -->
+        <VBox prefWidth="550" spacing="30" styleClass="login-left-pane" alignment="CENTER_LEFT">
+            <!-- Logo Section -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane>
+                    <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#2563eb" height="35.0" width="35.0" />
+                    <Label text="TF" textFill="white" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+                </StackPane>
+                <VBox>
+                    <Label text="TicketFlow" style="-fx-font-weight: bold; -fx-font-size: 18;"/>
+                    <Label text="Issue Tracking Workspace" style="-fx-text-fill: #6b7280; -fx-font-size: 12;"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="10">
+                <Label text="Welcome back" styleClass="login-title"/>
+                <Label text="Sign in to continue managing tickets and team workflows." styleClass="login-subtitle" wrapText="true"/>
+            </VBox>
+
+            <VBox spacing="20">
+                <VBox spacing="8">
+                    <Label text="Email" styleClass="form-label"/>
+                    <TextField fx:id="txtEmail" promptText="alice@example.com" styleClass="text-input-field"/>
+                </VBox>
+                <VBox spacing="8">
+                    <Label text="Password" styleClass="form-label"/>
+                    <!-- FIXED: promptText instead of title -->
+                    <PasswordField fx:id="txtPassword" promptText="••••••••" styleClass="text-input-field"/>
+                </VBox>
+            </VBox>
+
+            <HBox alignment="CENTER_LEFT">
+                <CheckBox fx:id="chkKeepLoggedIn" text="Keep me logged in" selected="true" style="-fx-text-fill: #374151;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Forgot Password" styleClass="forgot-link"/>
+            </HBox>
+
+            <Label fx:id="lblError" wrapText="true" style="-fx-text-fill: #b91c1c; -fx-font-size: 13px;" visible="false" managed="false"/>
+
+            <Button text="Sign in →" maxWidth="Infinity" styleClass="btn-login" onAction="#handleLogin"/>
+        </VBox>
+
+        <!-- RIGHT SIDE: BRANDING -->
+        <VBox prefWidth="550" spacing="25" styleClass="login-right-pane" alignment="CENTER_LEFT">
+            <Label text="WHAT TEAMS SAY" styleClass="teams-say"/>
+            <Label text="&quot;TicketFlow keeps approvals, priorities, and delivery in sync.&quot;" styleClass="quote-label" wrapText="true"/>
+            <Label text="Track critical work, route tickets fast, and keep everyone aligned from open to closed." styleClass="quote-sub" wrapText="true"/>
+        </VBox>
+
+    </HBox>
+</StackPane>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.ticket_list.TicketListController">
+          <HBox alignment="CENTER_LEFT" spacing="15">
+          <VBox><Label text="All Tickets" styleClass="board-header-title"/><Label fx:id="lblActiveTicketCount" text="0 active tickets" styleClass="board-header-subtitle"/></VBox>
+          <Region HBox.hgrow="ALWAYS"/>
+          <HBox spacing="0">
+              <Button text="⊞ Board" styleClass="toggle-btn, toggle-group-left" onAction="#switchToBoard"/>
+              <Button text="≣ List" styleClass="toggle-btn, active, toggle-group-right"/>
+          </HBox>
+          <Button fx:id="btnCreateTicket" text="+ Create Ticket" styleClass="btn, btn-primary" onAction="#openCreateTicketModal" style="-fx-background-color: #059669;"/>
+      </HBox>
+
+    <HBox spacing="25" VBox.vgrow="ALWAYS">
+        <!-- Table Grows -->
+        <VBox styleClass="list-table-container" HBox.hgrow="ALWAYS">
+            <HBox spacing="20" style="-fx-padding: 20 20 10 20;">
+                <Label text="TICKET" prefWidth="300" styleClass="column-header-label"/>
+                <Label text="CATEGORY" prefWidth="120" styleClass="column-header-label"/>
+                <Label text="STATUS" prefWidth="120" styleClass="column-header-label"/>
+                <Label text="PRIORITY" prefWidth="100" styleClass="column-header-label"/>
+                <Label text="ASSIGNEE" prefWidth="180" styleClass="column-header-label"/>
+            </HBox>
+             <HBox spacing="20" style="-fx-padding: 0 20 15 20; -fx-border-color: transparent transparent #e5e7eb transparent; -fx-border-width: 1;">
+                 <TextField fx:id="filterTicketField" promptText="Filter ticket..." prefWidth="300" styleClass="filter-box"/>
+                 <ComboBox fx:id="filterCategoryCombo" promptText="All" prefWidth="120" styleClass="filter-box"/>
+                 <ComboBox fx:id="filterStatusCombo" promptText="All" prefWidth="120" styleClass="filter-box"/>
+                 <ComboBox fx:id="filterPriorityCombo" promptText="All" prefWidth="100" styleClass="filter-box"/>
+                 <ComboBox fx:id="filterAssigneeCombo" promptText="All" prefWidth="180" styleClass="filter-box"/>
+             </HBox>
+            <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="listContainer"/></ScrollPane>
+        </VBox>
+
+        <!-- DETAILS PANE - LOCKED WIDTH -->
+        <VBox fx:id="detailsPanel" minWidth="450.0" prefWidth="450.0" maxWidth="450.0" alignment="CENTER" styleClass="details-panel">
+            <Label text="📋" style="-fx-font-size: 40px; -fx-text-fill: #d1d5db;"/><Label text="Please tap a ticket to select" style="-fx-text-fill: #9ca3af;"/>
+        </VBox>
+    </HBox>
+</VBox>

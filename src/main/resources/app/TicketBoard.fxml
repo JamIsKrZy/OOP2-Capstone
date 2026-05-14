@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.ticket_board.TicketBoardController">
+     <HBox alignment="CENTER_LEFT" spacing="15">
+         <VBox><Label fx:id="lblPageTitle" text="Board" styleClass="board-header-title"/><Label fx:id="lblActiveTicketCount" text="0 active tickets" styleClass="board-header-subtitle"/></VBox>
+         <Region HBox.hgrow="ALWAYS"/><HBox spacing="0">
+         <Button text="⊞ Board" styleClass="toggle-btn, active, toggle-group-left"/>
+         <Button text="≣ List" styleClass="toggle-btn, toggle-group-right" onAction="#switchToList"/>
+     </HBox>
+         <TextField fx:id="boardSearchField" promptText="Search tickets..." prefWidth="250" styleClass="search-field"/>
+         <Button fx:id="btnCreateTicket" text="+ Create Ticket" styleClass="btn, btn-primary" onAction="#openCreateTicketModal" style="-fx-background-color: #059669;"/>
+     </HBox>
+
+     <HBox spacing="20" VBox.vgrow="ALWAYS">
+         <!-- EQUAL COLUMNS - MAXIMIZED HEIGHT -->
+         <GridPane hgap="15" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+             <columnConstraints>
+                 <ColumnConstraints percentWidth="25"/><ColumnConstraints percentWidth="25"/>
+                 <ColumnConstraints percentWidth="25"/><ColumnConstraints percentWidth="25"/>
+             </columnConstraints>
+             <rowConstraints>
+                 <RowConstraints vgrow="ALWAYS" />
+             </rowConstraints>
+
+             <VBox styleClass="equal-column" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS">
+                 <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="OPEN" styleClass="column-title-open"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countOpen" text="0" styleClass="column-count-badge"/></HBox>
+                 <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colOpen" spacing="12"/></ScrollPane>
+             </VBox>
+
+             <VBox styleClass="equal-column" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
+                 <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="IN PROGRESS" styleClass="column-title-in-progress"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countInProgress" text="0" styleClass="column-count-badge"/></HBox>
+                 <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colInProgress" spacing="12"/></ScrollPane>
+             </VBox>
+
+             <VBox styleClass="equal-column" GridPane.columnIndex="2" GridPane.vgrow="ALWAYS">
+                 <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="PENDING QA" styleClass="column-title-pending-qa"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countPendingQA" text="0" styleClass="column-count-badge"/></HBox>
+                 <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colPendingQA" spacing="12"/></ScrollPane>
+             </VBox>
+
+             <VBox styleClass="equal-column" GridPane.columnIndex="3" GridPane.vgrow="ALWAYS">
+                 <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="APPROVED" styleClass="column-title-approved"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countApproved" text="0" styleClass="column-count-badge"/></HBox>
+                 <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colApproved" spacing="12"/></ScrollPane>
+             </VBox>
+         </GridPane>
+
+         <!-- DETAILS PANE - FIXED SIZE -->
+         <VBox fx:id="detailsPanel" alignment="CENTER" minWidth="450.0" maxWidth="450.0" styleClass="details-panel" VBox.vgrow="ALWAYS">
+             <Label text="📋" style="-fx-font-size: 50px; -fx-text-fill: #d1d5db;"/><Label text="Please tap a ticket to select" style="-fx-text-fill: #9ca3af;"/>
+         </VBox>
+     </HBox>
+</VBox>

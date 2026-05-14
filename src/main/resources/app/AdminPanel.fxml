@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="30" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.admin_panel.AdminPanelController">
+    <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+    <VBox spacing="0" styleClass="list-table-container" VBox.vgrow="ALWAYS">
+        <VBox spacing="15" style="-fx-padding: 25;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Manage Users" styleClass="board-header-title"/><Region HBox.hgrow="ALWAYS"/><TextField fx:id="userSearchField" promptText="Search users..." prefWidth="350" styleClass="search-field"/><Button text="+ Add User" styleClass="btn, btn-primary" onAction="#openAddUserModal"/>
+            </HBox>
+            <HBox spacing="20" style="-fx-padding: 10 0 0 0;">
+                <Label text="NAME" prefWidth="250" styleClass="column-header-label"/><Label text="EMAIL" prefWidth="250" styleClass="column-header-label"/><Label text="ROLE" prefWidth="150" styleClass="column-header-label"/><Label text="STATUS" prefWidth="100" styleClass="column-header-label"/><Label text="ACTION" prefWidth="300" styleClass="column-header-label"/>
+            </HBox>
+        </VBox>
+        <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="userListContainer"/></ScrollPane>
+    </VBox>
+    <HBox spacing="20">
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Total Users" styleClass="stat-label"/><Label text="5" styleClass="stat-value"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Users" styleClass="stat-label" style="-fx-text-fill: #059669;"/><Label text="5" styleClass="stat-value" style="-fx-text-fill: #059669;"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Tickets" styleClass="stat-label"/><Label text="9" styleClass="stat-value"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Closed Tickets" styleClass="stat-label"/><Label text="1" styleClass="stat-value"/></VBox>
+    </HBox>
+</VBox>
