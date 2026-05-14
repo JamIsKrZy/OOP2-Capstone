@@ -12,6 +12,7 @@ import workers.SessionManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 public class CreateTicketController {
@@ -25,11 +26,11 @@ public class CreateTicketController {
     public void initialize() {
         comboCategory.getItems().addAll("Bug", "Feature", "Enhancement", "Documentation");
         comboPriority.getItems().addAll("Low", "Medium", "High", "Critical");
-        comboStatus.getItems().addAll("Open", "In Progress", "Pending QA", "Approved");
+        comboStatus.getItems().addAll("OPEN", "CLAIMED", "PENDING-REVIEW");
 
         comboCategory.setValue("Bug");
         comboPriority.setValue("Medium");
-        comboStatus.setValue("Open");
+        comboStatus.setValue("OPEN");
     }
 
     @FXML
@@ -51,32 +52,30 @@ public class CreateTicketController {
             return;
         }
 
-        String status = comboStatus.getValue() != null ? comboStatus.getValue() : "Open";
+        String status = comboStatus.getValue() != null ? comboStatus.getValue() : "OPEN";
         String desc = txtDesc.getText() != null ? txtDesc.getText().trim() : "";
         String today = LocalDate.now().format(DATE_FMT);
 
         String id = MockDataProvider.nextTicketId();
+        
+        // Ticket(ticketId, discordThreadId, title, description, status, prUrl, claimedBy, closedBy, priority, categories, date_added, date_closed)
         Ticket t = new Ticket(
                 id,
+                "12345", // dummy discord thread
                 title,
-                comboCategory.getValue(),
-                status,
-                comboPriority.getValue(),
-                null, null, "Unassigned", "N/A",
                 desc,
+                status,
+                null, // prUrl
+                null, // claimedBy
+                null, // closedBy
+                comboPriority.getValue(),
+                List.of(comboCategory.getValue()),
                 today,
-                creator.name,
-                today,
-                "url",
-                creator.id,
-                null,
-                null,
-                null,
-                null
+                null // date_closed
         );
 
-        if ("In Progress".equals(status)) {
-            t.assignedToId = creator.id;
+        if ("CLAIMED".equals(status)) {
+            t.setClaimedBy(creator.userId);
         }
 
         MockDataProvider.addTicket(t);

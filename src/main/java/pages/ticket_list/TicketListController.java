@@ -55,7 +55,7 @@ public class TicketListController {
     // Observable lists for ComboBoxes
     private final ObservableList<String> categoryOptions = FXCollections.observableArrayList();
     private final ObservableList<String> statusOptions = FXCollections.observableArrayList(
-        "All", "Open", "In Progress", "Pending QA", "Approved", "Closed"
+        "All", "OPEN", "CLAIMED", "PENDING-REVIEW", "REVIEWED", "RESOLVED", "CLOSED"
     );
     private final ObservableList<String> priorityOptions = FXCollections.observableArrayList(
         "All", "Low", "Medium", "High", "Critical"
@@ -65,7 +65,7 @@ public class TicketListController {
     @FXML
     public void initialize() {
         User u = SessionManager.getLoggedUser();
-        boolean showCreate = u != null && "Project Manager".equals(u.role)
+        boolean showCreate = u != null && "Project Manager".equals(u.roleName)
                  && ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE;
         if (btnCreateTicket != null) {
             btnCreateTicket.setVisible(showCreate);
@@ -129,20 +129,21 @@ public class TicketListController {
         // Get unique categories
         Set<String> categories = new HashSet<>();
         for (Ticket t : allTickets) {
-            if (t.category != null && !t.category.trim().isEmpty()) {
-                categories.add(t.category);
+            if (t.getCategories() != null) {
+                categories.addAll(t.getCategories());
             }
         }
         categoryOptions.clear();
         categoryOptions.add("All");
-        categoryOptions.addAll(categories.stream().sorted().collect(Collectors.toList()));
+        categoryOptions.addAll(categories.stream().filter(c -> c != null && !c.isEmpty()).sorted().collect(Collectors.toList()));
 
         // Get unique assignees
         Set<String> assignees = new HashSet<>();
         assignees.add("Unassigned");
         for (Ticket t : allTickets) {
-            if (t.assigneeName != null && !t.assigneeName.equals("Unassigned")) {
-                assignees.add(t.assigneeName);
+            User u = MockDataProvider.findUserById(t.getClaimedBy());
+            if (u != null) {
+                assignees.add(u.username);
             }
         }
         assigneeOptions.clear();
@@ -162,29 +163,32 @@ public class TicketListController {
     private boolean ticketMatchesFilters(Ticket t) {
         // Filter by ticket text field (searches ID and title)
         if (!filterTicketQuery.isEmpty()) {
-            boolean matchesId = t.id != null && t.id.toLowerCase().contains(filterTicketQuery);
-            boolean matchesTitle = t.title != null && t.title.toLowerCase().contains(filterTicketQuery);
+            boolean matchesId = t.getTicketId() != null && t.getTicketId().toLowerCase().contains(filterTicketQuery);
+            boolean matchesTitle = t.getTitle() != null && t.getTitle().toLowerCase().contains(filterTicketQuery);
             if (!matchesId && !matchesTitle) return false;
         }
 
         // Filter by category
-        if (!"All".equals(selectedCategory) && (t.category == null || !t.category.equals(selectedCategory))) {
-            return false;
+        if (!"All".equals(selectedCategory)) {
+            if (t.getCategories() == null || !t.getCategories().contains(selectedCategory)) {
+                return false;
+            }
         }
 
         // Filter by status
-        if (!"All".equals(selectedStatus) && (t.status == null || !t.status.equals(selectedStatus))) {
+        if (!"All".equals(selectedStatus) && (t.getStatus() == null || !t.getStatus().equals(selectedStatus))) {
             return false;
         }
 
         // Filter by priority
-        if (!"All".equals(selectedPriority) && (t.priority == null || !t.priority.equals(selectedPriority))) {
+        if (!"All".equals(selectedPriority) && (t.getPriority() == null || !t.getPriority().equals(selectedPriority))) {
             return false;
         }
 
         // Filter by assignee
         if (!"All".equals(selectedAssignee)) {
-            String ticketAssignee = t.assigneeName != null ? t.assigneeName : "Unassigned";
+            User u = MockDataProvider.findUserById(t.getClaimedBy());
+            String ticketAssignee = u != null ? u.username : "Unassigned";
             if (!ticketAssignee.equals(selectedAssignee)) {
                 return false;
             }
@@ -211,21 +215,21 @@ public class TicketListController {
     private List<Ticket> visibleTickets() {
         List<Ticket> all = MockDataProvider.getTickets();
         if (ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE) {
-            return all.stream().filter(t -> !"Closed".equals(t.status)).collect(Collectors.toList());
+            return all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
         }
         return filterMyTasks(all, SessionManager.getLoggedUser());
     }
 
     private List<Ticket> filterMyTasks(List<Ticket> all, User u) {
         if (u == null) return new ArrayList<>();
-        List<Ticket> nonClosed = all.stream().filter(t -> !"Closed".equals(t.status)).collect(Collectors.toList());
-        if ("Developer".equals(u.role)) {
-            return nonClosed.stream().filter(t -> u.id.equals(t.assignedToId)).collect(Collectors.toList());
+        List<Ticket> nonClosed = all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
+        if ("Developer".equals(u.roleName)) {
+            return nonClosed.stream().filter(t -> u.userId.equals(t.getClaimedBy())).collect(Collectors.toList());
         }
-        if ("QA".equals(u.role)) {
+        if ("QA".equals(u.roleName)) {
             return nonClosed.stream().filter(t ->
-                     "Pending QA".equals(t.status)
-                            || ("Approved".equals(t.status) && u.id.equals(t.reviewedById))
+                     "PENDING-REVIEW".equals(t.getStatus())
+                            || (("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) && u.userId.equals(t.getClosedBy()))
             ).collect(Collectors.toList());
         }
         return new ArrayList<>();
@@ -246,13 +250,17 @@ public class TicketListController {
             DetailRenderer.render(detailsPanel, t, this::refreshList);
         });
 
-        VBox tBox = createCol(new VBox(2, boldLabel(t.title), mutedLabel(t.id)), 300);
-        StackPane cat = createCol(new StackPane(tag(t.category, "tag-" + t.category.toLowerCase())), 120);
-        StackPane stat = createCol(new StackPane(tag(t.status, getStatusStyle(t.status))), 120);
-        StackPane prio = createCol(new StackPane(new Label(t.priority)), 100);
-        prio.getChildren().get(0).getStyleClass().add("priority-" + t.priority.toLowerCase());
+        String tid = t.getTicketId();
+        VBox tBox = createCol(new VBox(2, boldLabel(t.getTitle()), mutedLabel(tid)), 300);
+        String catLabel = (t.getCategories() != null && !t.getCategories().isEmpty()) ? t.getCategories().get(0) : "N/A";
+        StackPane cat = createCol(new StackPane(tag(catLabel, "tag-feature")), 120);
+        StackPane stat = createCol(new StackPane(tag(t.getStatus(), getStatusStyle(t.getStatus()))), 120);
+        StackPane prio = createCol(new StackPane(new Label(t.getPriority())), 100);
+        prio.getChildren().get(0).getStyleClass().add("priority-" + t.getPriority().toLowerCase());
 
-        Label assignee = new Label(t.assigneeName);
+        User u = MockDataProvider.findUserById(t.getClaimedBy());
+        String assigneeName = u != null ? u.username : "Unassigned";
+        Label assignee = new Label(assigneeName);
         assignee.setStyle("-fx-text-fill: #111827;");
         StackPane assCol = createCol(new StackPane(assignee), 180);
 
@@ -289,16 +297,18 @@ public class TicketListController {
     }
 
     private String getStatusStyle(String s) {
+        if (s == null) return "status-open";
         switch (s) {
-            case "Open":
+            case "OPEN":
                 return "status-open";
-            case "In Progress":
+            case "CLAIMED":
                 return "status-progress";
-            case "Pending QA":
+            case "PENDING-REVIEW":
                 return "status-pending";
-            case "Approved":
+            case "REVIEWED":
+            case "RESOLVED":
                 return "status-approved";
-            case "Closed":
+            case "CLOSED":
                 return "status-closed";
             default:
                 return "status-open";

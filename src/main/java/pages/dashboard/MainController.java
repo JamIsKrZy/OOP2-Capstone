@@ -77,11 +77,12 @@ public class MainController {
     private void setupUserSession() {
         User u = SessionManager.getLoggedUser();
         if (u != null) {
-            sidebarUserName.setText(u.name);
-            topbarUserName.setText(u.name);
-            sidebarUserRole.setText(u.role);
-            topbarUserRole.setText(u.role);
-            sidebarAvatarText.setText(u.initials);
+            sidebarUserName.setText(u.username);
+            topbarUserName.setText(u.username);
+            sidebarUserRole.setText(u.roleName);
+            topbarUserRole.setText(u.roleName);
+            String initials = (u.username != null && !u.username.isEmpty()) ? String.valueOf(u.username.charAt(0)).toUpperCase() : "U";
+            sidebarAvatarText.setText(initials);
         }
     }
 
@@ -94,7 +95,7 @@ public class MainController {
     private void applyRoleBasedAccess() {
         User u = SessionManager.getLoggedUser();
         if (u == null) return;
-        boolean isPm = "Project Manager".equals(u.role);
+        boolean isPm = "Project Manager".equals(u.roleName);
         myTasksSection.setVisible(!isPm);
         myTasksSection.setManaged(!isPm);
         adminSystemSection.setVisible(isPm);
@@ -125,7 +126,7 @@ public class MainController {
     @FXML
     private void navMyTasks() {
         User u = SessionManager.getLoggedUser();
-        if (u != null && "QA".equals(u.role)) {
+        if (u != null && "QA".equals(u.roleName)) {
             lblBreadcrumbCurrent.setText("Review Queue");
         } else {
             lblBreadcrumbCurrent.setText("My Tasks");
@@ -170,5 +171,5 @@ public class MainController {
          } else {
             notificationPopupController.showNotificationsPopup(event);
          }
-     }
+      }
 }

@@ -1,43 +1,28 @@
 package models;
 
 public class User {
-    public String id;
-    public String name;
-    public String email;
-    public String role;
-    /** "active" or "disabled" (React parity) */
-    public String status;
-    public String initials;
-    public String color;
-    public String discordId;
-    public int inProgress;
-    public int resolved;
-    public int closed;
-    public int reviewed;
-    public int approved;
+    public String userId;
+    public String username;
+    public String roleName;
+    public int devScore;
+    public int qaScore;
 
-    public User(String id, String name, String email, String role, String status, String initials, String color,
-                String discordId, int inProgress, int resolved, int closed, int reviewed, int approved) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.status = status;
-        this.initials = initials;
-        this.color = color;
-        this.discordId = discordId != null ? discordId : "";
-        this.inProgress = inProgress;
-        this.resolved = resolved;
-        this.closed = closed;
-        this.reviewed = reviewed;
-        this.approved = approved;
+    public User(String userId, String username, String roleName, int devScore, int qaScore) {
+        this.userId = userId;
+        this.username = username;
+        this.roleName = roleName;
+        this.devScore = devScore;
+        this.qaScore = qaScore;
     }
 
-    public boolean isActive() {
-        return "active".equalsIgnoreCase(status);
-    }
+    public String getUserId() { return userId; }
+    public String getUsername() { return username; }
+    public String getRoleName() { return roleName; }
+    public int getDevScore() { return devScore; }
+    public int getQaScore() { return qaScore; }
 
-    public String displayStatus() {
-        return "active".equalsIgnoreCase(status) ? "Active" : "Disabled";
+    @Override
+    public String toString() {
+        return String.format("%s (%s) - Dev: %d | QA: %d", username, roleName, devScore, qaScore);
     }
 }

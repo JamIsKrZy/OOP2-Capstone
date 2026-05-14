@@ -40,7 +40,7 @@ public class ProgressReportsController {
 
         int rank = 1;
         for (User u : users) {
-            if (u.role.equals(roleFilter)) {
+            if (u.roleName.equals(roleFilter)) {
                 reportsContainer.getChildren().add(createReportCard(u, roleFilter.equals("Developer"), rank));
                 rank++;
             }
@@ -52,53 +52,37 @@ public class ProgressReportsController {
         VBox card = new VBox(25);
         card.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;");
 
-        // Top Section (Avatar + Name/Email + Status)
+        // Top Section (Avatar + Name)
         HBox topSection = new HBox(15);
         topSection.setAlignment(Pos.CENTER_LEFT);
 
-        // Rank Avatar (🥇 for 1, 🥈 for 2)
+        // Rank Avatar (🥇 for 1, 🥈 for 2, 🥉 for 3, etc.)
         StackPane avatar = new StackPane();
         Circle avatarCircle = new Circle(22, Color.web("#fef3c7"));
-        Label rankEmoji = new Label(rank == 1 ? "🥇" : "🥈");
+        String emoji = "👤";
+        if (rank == 1) emoji = "🥇";
+        else if (rank == 2) emoji = "🥈";
+        else if (rank == 3) emoji = "🥉";
+        Label rankEmoji = new Label(emoji);
         rankEmoji.setStyle("-fx-font-size: 18px;");
         avatar.getChildren().addAll(avatarCircle, rankEmoji);
 
-        // Name and Email Container
+        // Name Container
         VBox infoContainer = new VBox(3);
-        Label nameLabel = new Label(u.name);
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #111827;"); // DARK BOLD NAME
+        Label nameLabel = new Label(u.username);
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #111827;");
+        infoContainer.getChildren().add(nameLabel);
 
-        Label emailLabel = new Label(u.email);
-        emailLabel.setStyle("-fx-text-fill: #9ca3af; -fx-font-size: 13px;");
-        infoContainer.getChildren().addAll(nameLabel, emailLabel);
+        topSection.getChildren().addAll(avatar, infoContainer);
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Label statusBadge = new Label(u.displayStatus());
-        statusBadge.getStyleClass().addAll("status-tag", u.isActive() ? "status-approved" : "status-tag");
-        if (!u.isActive()) {
-            statusBadge.setStyle("-fx-background-color: #fef2f2; -fx-text-fill: #dc2626;");
-        }
-
-        topSection.getChildren().addAll(avatar, infoContainer, spacer, statusBadge);
-
-        // Stats Section (The three colored blocks)
+        // Stats Section
         HBox statsGrid = new HBox(20);
         statsGrid.setAlignment(Pos.CENTER);
 
         if (isDev) {
-            statsGrid.getChildren().addAll(
-                    createPerfBlock("In Progress", u.inProgress, "#eff6ff", "#2563eb"),
-                    createPerfBlock("Resolved", u.resolved, "#f0fdf4", "#16a34a"),
-                    createPerfBlock("Closed", u.closed, "#f9fafb", "#4b5563")
-            );
+            statsGrid.getChildren().add(createPerfBlock("Dev Score", u.devScore, "#eff6ff", "#2563eb"));
         } else {
-            statsGrid.getChildren().addAll(
-                    createPerfBlock("Reviewed", u.reviewed, "#f5f3ff", "#7c3aed"),
-                    createPerfBlock("Approved", u.approved, "#f0fdf4", "#16a34a"),
-                    createPerfBlock("Closed", u.closed, "#f9fafb", "#4b5563")
-            );
+            statsGrid.getChildren().add(createPerfBlock("QA Score", u.qaScore, "#f5f3ff", "#7c3aed"));
         }
 
         card.getChildren().addAll(topSection, statsGrid);

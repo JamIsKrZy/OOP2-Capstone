@@ -36,7 +36,7 @@ public final class MockDataProvider {
     private static User lookupUser(String id) {
         if (id == null) return null;
         for (User u : users) {
-            if (id.equals(u.id)) return u;
+            if (id.equals(u.userId)) return u;
         }
         return null;
     }
@@ -46,34 +46,18 @@ public final class MockDataProvider {
         return lookupUser(id);
     }
 
-    public static User findUserByEmail(String email) {
+    public static User findUserByUsername(String username) {
         ensureSeeded();
-        if (email == null) return null;
-        String key = email.trim().toLowerCase(Locale.ROOT);
+        if (username == null) return null;
+        String key = username.trim().toLowerCase(Locale.ROOT);
         for (User u : users) {
-            if (u.email != null && u.email.toLowerCase(Locale.ROOT).equals(key)) return u;
+            if (u.username != null && u.username.toLowerCase(Locale.ROOT).equals(key)) return u;
         }
         return null;
     }
 
-    /** Refresh display fields from ids; safe during seed (no ensureSeeded). */
-    public static void syncTicketDisplay(Ticket t) {
-        User creator = lookupUser(t.createdById);
-        if (creator != null) {
-            t.createdBy = creator.name;
-        }
-        User assignee = lookupUser(t.assignedToId);
-        if (assignee != null) {
-            t.assigneeInitials = assignee.initials;
-            t.assigneeColor = assignee.color;
-            t.assigneeName = assignee.name;
-            t.assigneeRole = assignee.role;
-        } else {
-            t.assigneeInitials = null;
-            t.assigneeColor = null;
-            t.assigneeName = "Unassigned";
-            t.assigneeRole = "N/A";
-        }
+    public static User findUserByEmail(String email) {
+        return findUserByUsername(email);
     }
 
     public static void addUser(User user) {
@@ -85,7 +69,7 @@ public final class MockDataProvider {
         ensureSeeded();
         Iterator<User> it = users.iterator();
         while (it.hasNext()) {
-            if (Objects.equals(id, it.next().id)) {
+            if (Objects.equals(id, it.next().userId)) {
                 it.remove();
                 return true;
             }
@@ -95,7 +79,6 @@ public final class MockDataProvider {
 
     public static void addTicket(Ticket ticket) {
         ensureSeeded();
-        syncTicketDisplay(ticket);
         tickets.add(ticket);
     }
 
@@ -104,7 +87,7 @@ public final class MockDataProvider {
         int max = 0;
         for (Ticket t : tickets) {
             try {
-                String num = t.id.replace("TKT-", "");
+                String num = t.getTicketId().replace("TKT-", "");
                 max = Math.max(max, Integer.parseInt(num));
             } catch (NumberFormatException ignored) {
                 // skip
@@ -124,72 +107,31 @@ public final class MockDataProvider {
         users.clear();
         tickets.clear();
 
-        users.add(new User("1", "Alice Johnson", "alice@example.com", "Project Manager", "active", "AJ", "#3b82f6",
-                "alice#1234", 0, 45, 89, 120, 0));
-        users.add(new User("2", "Bob Smith", "bob@example.com", "Developer", "active", "BS", "#4f46e5",
-                "bob#5678", 2, 78, 34, 12, 0));
-        users.add(new User("3", "Carol Williams", "carol@example.com", "QA", "active", "CW", "#9333ea",
-                "carol#9012", 0, 5, 67, 92, 1));
-        users.add(new User("4", "David Brown", "david@example.com", "Developer", "active", "DB", "#2563eb",
-                "david#3456", 1, 56, 23, 8, 0));
-        users.add(new User("5", "Emma Davis", "emma@example.com", "QA", "active", "ED", "#db2777",
-                "emma#7890", 0, 3, 58, 74, 1));
+        // User(userId, username, roleName, devScore, qaScore)
+        users.add(new User("1", "Alice Johnson", "Project Manager", 45, 89));
+        users.add(new User("2", "Bob Smith", "Developer", 78, 34));
+        users.add(new User("3", "Carol Williams", "QA", 5, 67));
+        users.add(new User("4", "David Brown", "Developer", 56, 23));
+        users.add(new User("5", "Emma Davis", "QA", 3, 58));
 
-        tickets.add(buildSeedTicket("TKT-001", "Login page not responding on mobile", "Bug", "Open", "High",
-                "Users reporting white screen on iOS devices.", "April 20, 2026", "May 1, 2026",
-                "1", null, null, null, null));
-        tickets.add(buildSeedTicket("TKT-002", "Add dark mode toggle", "Feature", "In Progress", "Medium",
-                "Implement a toggle in settings.", "April 25, 2026", "May 4, 2026",
-                "1", "2", null, null, null));
-        tickets.add(buildSeedTicket("TKT-003", "API response time optimization", "Enhancement", "Pending QA", "High",
-                "Optimize database queries to reduce API response time", "April 28, 2026", "May 4, 2026",
-                "1", "4", "4", null, null));
-        tickets.add(buildSeedTicket("TKT-004", "Update user documentation", "Documentation", "Approved", "Low",
-                "Finalize the user manual.", "May 3, 2026", "May 4, 2026",
-                "1", "2", "2", "3", null));
-        tickets.add(buildSeedTicket("TKT-005", "Memory leak in dashboard component", "Bug", "Open", "Critical",
-                "High memory usage after 5 minutes.", "May 2, 2026", "May 4, 2026",
-                "1", null, null, null, null));
-        tickets.add(buildSeedTicket("TKT-006", "Implement export to CSV feature", "Feature", "In Progress", "Medium",
-                "Add download button to reports.", "May 1, 2026", "May 4, 2026",
-                "1", "4", null, null, null));
-        tickets.add(buildSeedTicket("TKT-007", "Search functionality improvement", "Enhancement", "Pending QA", "Medium",
-                "Improve fuzzy search results.", "May 2, 2026", "May 4, 2026",
-                "1", "2", "2", null, null));
-        tickets.add(buildSeedTicket("TKT-008", "Email notification system", "Feature", "Open", "Low",
-                "Send alerts on status change.", "May 1, 2026", "May 4, 2026",
-                "1", null, null, null, null));
-        tickets.add(buildSeedTicket("TKT-009", "Fix broken image uploads", "Bug", "Closed", "High",
-                "Image upload feature returns 500 error for files over 5MB.", "April 20, 2026", "April 28, 2026",
-                "1", "4", "4", "5", "3"));
-        tickets.add(buildSeedTicket("TKT-010", "Accessibility audit", "Enhancement", "In Progress", "Medium",
-                "Run a full WCAG 2.1 check.", "May 3, 2026", "May 4, 2026",
-                "1", "2", null, null, null));
-
-        for (Ticket t : tickets) {
-            syncTicketDisplay(t);
-        }
-    }
-
-    private static Ticket buildSeedTicket(String id, String title, String category, String status, String priority,
-                                          String description, String createdDate, String lastUpdated,
-                                          String createdById, String assignedToId, String resolvedById,
-                                          String reviewedById, String closedById) {
-        User creator = lookupUser(createdById);
-        String createdByName = creator != null ? creator.name : "";
-        Ticket t = new Ticket(id, title, category, status, priority,
-                null, null, "Unassigned", "N/A",
-                description, createdDate, createdByName, lastUpdated, "url",
-                createdById, assignedToId, resolvedById, reviewedById, closedById);
-        syncTicketDisplay(t);
-        return t;
+        // Ticket(ticketId, discordThreadId, title, description, status, prUrl, claimedBy, closedBy, priority, categories, date_added, date_closed)
+        tickets.add(new Ticket("TKT-001", "12345", "Login page not responding on mobile", "Users reporting white screen on iOS devices.", "OPEN", "https://github.com/PR-001", null, null, "High", List.of("Bug"), "April 20, 2026", null));
+        tickets.add(new Ticket("TKT-002", "12346", "Add dark mode toggle", "Implement a toggle in settings.", "CLAIMED", "https://github.com/PR-002", "2", null, "Medium", List.of("Feature"), "April 25, 2026", null));
+        tickets.add(new Ticket("TKT-003", "12347", "API response time optimization", "Optimize database queries to reduce API response time", "PENDING-REVIEW", "https://github.com/PR-003", "4", null, "High", List.of("Enhancement"), "April 28, 2026", null));
+        tickets.add(new Ticket("TKT-004", "12348", "Update user documentation", "Finalize the user manual.", "RESOLVED", "https://github.com/PR-004", "2", null, "Low", List.of("Documentation"), "May 3, 2026", null));
+        tickets.add(new Ticket("TKT-005", "12349", "Memory leak in dashboard component", "High memory usage after 5 minutes.", "OPEN", "https://github.com/PR-005", null, null, "Critical", List.of("Bug"), "May 2, 2026", null));
+        tickets.add(new Ticket("TKT-006", "12350", "Implement export to CSV feature", "Add download button to reports.", "CLAIMED", "https://github.com/PR-006", "4", null, "Medium", List.of("Feature"), "May 1, 2026", null));
+        tickets.add(new Ticket("TKT-007", "12351", "Search functionality improvement", "Improve fuzzy search results.", "PENDING-REVIEW", "https://github.com/PR-007", "2", null, "Medium", List.of("Enhancement"), "May 2, 2026", null));
+        tickets.add(new Ticket("TKT-008", "12352", "Email notification system", "Send alerts on status change.", "OPEN", "https://github.com/PR-008", null, null, "Low", List.of("Feature"), "May 1, 2026", null));
+        tickets.add(new Ticket("TKT-009", "12353", "Fix broken image uploads", "Image upload feature returns 500 error for files over 5MB.", "CLOSED", "https://github.com/PR-009", "4", "5", "High", List.of("Bug"), "April 20, 2026", "April 28, 2026"));
+        tickets.add(new Ticket("TKT-010", "12354", "Accessibility audit", "Run a full WCAG 2.1 check.", "CLAIMED", "https://github.com/PR-010", "2", null, "Medium", List.of("Enhancement"), "May 3, 2026", null));
     }
 
     public static long countUsersWithRole(String role) {
         ensureSeeded();
         long n = 0;
         for (User u : users) {
-            if (role.equals(u.role) && u.isActive()) n++;
+            if (role.equals(u.roleName)) n++;
         }
         return n;
     }

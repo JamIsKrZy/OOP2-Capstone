@@ -4,33 +4,38 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Demo passwords aligned with reference Ticketflow mockData.ts; extra registrants from Add User. */
+/** Demo passwords aligned with updated usernames; extra registrants from Add User. */
 public final class DemoCredentials {
 
-    private static final Map<String, String> EMAIL_TO_PASSWORD = Map.of(
-            "alice@example.com", "pm12345",
-            "bob@example.com", "dev12345",
-            "carol@example.com", "qa12345",
-            "david@example.com", "dev54321",
-            "emma@example.com", "qa54321"
+    private static final Map<String, String> NAME_TO_PASSWORD = Map.of(
+            "Alice Johnson", "pm12345",
+            "Bob Smith", "dev12345",
+            "Carol Williams", "qa12345",
+            "David Brown", "dev54321",
+            "Emma Davis", "qa54321"
     );
 
     private static final Map<String, String> EXTRA = new ConcurrentHashMap<>();
 
     private DemoCredentials() {}
 
-    public static void registerPassword(String email, String password) {
-        if (email == null || password == null) return;
-        EXTRA.put(email.trim().toLowerCase(Locale.ROOT), password);
+    public static void registerPassword(String name, String password) {
+        if (name == null || password == null) return;
+        EXTRA.put(name.trim().toLowerCase(Locale.ROOT), password);
     }
 
-    public static boolean matches(String email, String password) {
-        if (email == null || password == null) return false;
-        String key = email.trim().toLowerCase(Locale.ROOT);
-        String expected = EMAIL_TO_PASSWORD.get(key);
-        if (expected == null) {
-            expected = EXTRA.get(key);
+    public static boolean matches(String name, String password) {
+        if (name == null || password == null) return false;
+        String key = name.trim().toLowerCase(Locale.ROOT);
+        
+        // Check case-insensitive for demo convenience
+        for (Map.Entry<String, String> entry : NAME_TO_PASSWORD.entrySet()) {
+            if (entry.getKey().toLowerCase(Locale.ROOT).equals(key)) {
+                return entry.getValue().equals(password);
+            }
         }
+        
+        String expected = EXTRA.get(key);
         return expected != null && expected.equals(password);
     }
 }

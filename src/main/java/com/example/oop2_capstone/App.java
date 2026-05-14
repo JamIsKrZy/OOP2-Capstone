@@ -15,7 +15,7 @@ public class App extends Application {
         String savedEmail = AppPrefs.prefs().get(AppPrefs.KEY_EMAIL, null);
         if (savedEmail != null && !savedEmail.isBlank()) {
             User u = MockDataProvider.findUserByEmail(savedEmail);
-            if (u != null && u.isActive()) {
+            if (u != null) {
                 SessionManager.setLoggedUser(u);
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/MainLayout.fxml"));
                 Scene scene = new Scene(loader.load(), 1280, 800);

@@ -40,14 +40,14 @@ public class TicketBoardController {
      public void initialize() {
          initializeBoardSearch();
          User u = SessionManager.getLoggedUser();
-         boolean showCreate = u != null && "Project Manager".equals(u.role)
+         boolean showCreate = u != null && "Project Manager".equals(u.roleName)
                  && ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE;
          btnCreateTicket.setVisible(showCreate);
          btnCreateTicket.setManaged(showCreate);
 
          if (lblPageTitle != null) {
              if (ViewContext.ticketMode == ViewContext.TicketViewMode.MY_TASKS && u != null) {
-                 lblPageTitle.setText("QA".equals(u.role) ? "Review Queue" : "My Tasks");
+                 lblPageTitle.setText("QA".equals(u.roleName) ? "Review Queue" : "My Tasks");
               } else {
                  lblPageTitle.setText("Board");
               }
@@ -67,12 +67,16 @@ public class TicketBoardController {
 
      private boolean ticketMatchesBoardSearch(Ticket t) {
          if (boardSearchQuery.isEmpty()) return true;
-         return (t.title != null && t.title.toLowerCase().contains(boardSearchQuery))
-                 || (t.id != null && t.id.toLowerCase().contains(boardSearchQuery))
-                 || (t.category != null && t.category.toLowerCase().contains(boardSearchQuery))
-                 || (t.status != null && t.status.toLowerCase().contains(boardSearchQuery))
-                 || (t.priority != null && t.priority.toLowerCase().contains(boardSearchQuery))
-                 || (t.assigneeName != null && t.assigneeName.toLowerCase().contains(boardSearchQuery));
+         String cats = t.getCategories() != null ? String.join(", ", t.getCategories()) : "";
+         User u = MockDataProvider.findUserById(t.getClaimedBy());
+         String assigneeName = u != null ? u.username : "Unassigned";
+         
+         return (t.getTitle() != null && t.getTitle().toLowerCase().contains(boardSearchQuery))
+                 || (t.getTicketId() != null && t.getTicketId().toLowerCase().contains(boardSearchQuery))
+                 || (cats.toLowerCase().contains(boardSearchQuery))
+                 || (t.getStatus() != null && t.getStatus().toLowerCase().contains(boardSearchQuery))
+                 || (t.getPriority() != null && t.getPriority().toLowerCase().contains(boardSearchQuery))
+                 || (assigneeName.toLowerCase().contains(boardSearchQuery));
        }
 
      public void refreshBoard() {
@@ -89,17 +93,21 @@ public class TicketBoardController {
 
          for (Ticket t : tickets) {
              VBox card = createCard(t);
-             switch (t.status) {
-                 case "Open":
+             String status = t.getStatus();
+             if (status == null) continue;
+             
+             switch (status) {
+                 case "OPEN":
                      colOpen.getChildren().add(card);
                      break;
-                 case "In Progress":
+                 case "CLAIMED":
                      colInProgress.getChildren().add(card);
                      break;
-                 case "Pending QA":
+                 case "PENDING-REVIEW":
                      colPendingQA.getChildren().add(card);
                      break;
-                 case "Approved":
+                 case "REVIEWED":
+                 case "RESOLVED":
                      colApproved.getChildren().add(card);
                      break;
                  default:
@@ -107,26 +115,26 @@ public class TicketBoardController {
               }
           }
          updateCounts();
-      }
+       }
 
     private List<Ticket> visibleTickets() {
         List<Ticket> all = MockDataProvider.getTickets();
         if (ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE) {
-            return all.stream().filter(t -> !"Closed".equals(t.status)).collect(Collectors.toList());
+            return all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
         }
         return filterMyTasks(all, SessionManager.getLoggedUser());
     }
 
     private List<Ticket> filterMyTasks(List<Ticket> all, User u) {
         if (u == null) return new ArrayList<>();
-        List<Ticket> nonClosed = all.stream().filter(t -> !"Closed".equals(t.status)).collect(Collectors.toList());
-        if ("Developer".equals(u.role)) {
-            return nonClosed.stream().filter(t -> u.id.equals(t.assignedToId)).collect(Collectors.toList());
+        List<Ticket> nonClosed = all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
+        if ("Developer".equals(u.roleName)) {
+            return nonClosed.stream().filter(t -> u.userId.equals(t.getClaimedBy())).collect(Collectors.toList());
         }
-        if ("QA".equals(u.role)) {
+        if ("QA".equals(u.roleName)) {
             return nonClosed.stream().filter(t ->
-                    "Pending QA".equals(t.status)
-                            || ("Approved".equals(t.status) && u.id.equals(t.reviewedById))
+                     "PENDING-REVIEW".equals(t.getStatus())
+                            || (("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) && u.userId.equals(t.getClosedBy()))
             ).collect(Collectors.toList());
         }
         return new ArrayList<>();
@@ -152,19 +160,21 @@ public class TicketBoardController {
             DetailRenderer.render(detailsPanel, t, this::refreshBoard);
         });
 
-        Label tag = new Label(t.category);
-        tag.getStyleClass().addAll("tag", "tag-" + t.category.toLowerCase());
-        Label title = new Label(t.title);
+        String catName = (t.getCategories() != null && !t.getCategories().isEmpty()) ? t.getCategories().get(0) : "N/A";
+        Label tag = new Label(catName);
+        tag.getStyleClass().addAll("tag", "tag-feature");
+        Label title = new Label(t.getTitle());
         title.getStyleClass().add("ticket-title");
         HBox bottom = new HBox(8);
         bottom.setAlignment(Pos.CENTER_LEFT);
-        Circle dot = new Circle(4, priorityColor(t.priority));
-        bottom.getChildren().addAll(dot, new Label(t.id));
+        Circle dot = new Circle(4, priorityColor(t.getPriority()));
+        bottom.getChildren().addAll(dot, new Label(t.getTicketId()));
         card.getChildren().addAll(tag, title, bottom);
         return card;
     }
 
     private static Color priorityColor(String priority) {
+        if (priority == null) return Color.valueOf("#22c55e");
         switch (priority) {
             case "Critical":
                 return Color.valueOf("#dc2626");

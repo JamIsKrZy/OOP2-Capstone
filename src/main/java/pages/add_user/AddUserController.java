@@ -13,7 +13,7 @@ import workers.MockDataProvider;
 
 public class AddUserController {
 
-    @FXML private TextField txtName, txtEmail;
+    @FXML private TextField txtName, txtEmail; // Treat txtEmail as UserID
     @FXML private PasswordField txtPassword;
     @FXML private RadioButton rbPM, rbDev, rbQA;
     @FXML private ToggleGroup roleGroup;
@@ -46,37 +46,26 @@ public class AddUserController {
 
     @FXML
     private void handleCreate() {
-        String name = txtName.getText() != null ? txtName.getText().trim() : "";
-        String email = txtEmail.getText() != null ? txtEmail.getText().trim().toLowerCase() : "";
+        String username = txtName.getText() != null ? txtName.getText().trim() : "";
+        String userId = txtEmail.getText() != null ? txtEmail.getText().trim() : "";
         String password = txtPassword != null ? txtPassword.getText() : "";
         RadioButton selected = (RadioButton) roleGroup.getSelectedToggle();
         String role = (selected != null) ? selected.getText() : "Developer";
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || userId.isEmpty() || password.isEmpty()) {
             return;
         }
-        if (MockDataProvider.findUserByEmail(email) != null) {
+        if (MockDataProvider.findUserById(userId) != null) {
             return;
         }
 
-        String id = String.valueOf(System.currentTimeMillis());
-        String initials = initialsFromName(name);
-
-        User user = new User(id, name, email, role, "active", initials, "#6366f1", "",
-                0, 0, 0, 0, 0);
-        DemoCredentials.registerPassword(email, password);
+        // User(userId, username, roleName, devScore, qaScore)
+        User user = new User(userId, username, role, 0, 0);
+        
+        // DemoCredentials still uses "email" as a key, I'll use username or userId
+        DemoCredentials.registerPassword(username, password);
+        
         MockDataProvider.addUser(user);
         handleCancel();
-    }
-
-    private static String initialsFromName(String name) {
-        String[] parts = name.trim().split("\\s+");
-        if (parts.length >= 2) {
-            return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
-        }
-        if (name.length() >= 2) {
-            return name.substring(0, 2).toUpperCase();
-        }
-        return name.toUpperCase();
     }
 }

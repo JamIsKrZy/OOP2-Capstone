@@ -1,50 +1,92 @@
 package models;
 
+import java.util.List;
+
 public class Ticket {
-    public String id;
-    public String title;
-    public String category;
-    public String status;
-    public String priority;
-    public String assigneeInitials;
-    public String assigneeColor;
-    public String assigneeName;
-    public String assigneeRole;
-    public String description;
-    public String createdDate;
-    /** Display name of creator */
-    public String createdBy;
-    public String lastUpdated;
-    public String discordUrl;
+        private String ticketId;
+        private String title;
+        private String description;
+        private String status;
+        private String priority; // new update
+        private List<String> categories; // new update
 
-    public String createdById;
-    public String assignedToId;
-    public String resolvedById;
-    public String reviewedById;
-    public String closedById;
+        private String discordThreadId;
+        private String prUrl;
 
-    public Ticket(String id, String title, String category, String status, String priority,
-                  String assigneeInitials, String assigneeColor, String assigneeName, String assigneeRole,
-                  String description, String createdDate, String createdBy, String lastUpdated, String discordUrl,
-                  String createdById, String assignedToId, String resolvedById, String reviewedById, String closedById) {
-        this.id = id;
-        this.title = title;
-        this.category = category;
-        this.status = status;
-        this.priority = priority;
-        this.assigneeInitials = assigneeInitials;
-        this.assigneeColor = assigneeColor;
-        this.assigneeName = assigneeName;
-        this.assigneeRole = assigneeRole;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.createdBy = createdBy;
-        this.lastUpdated = lastUpdated;
-        this.discordUrl = discordUrl;
-        this.createdById = createdById;
-        this.assignedToId = assignedToId;
-        this.resolvedById = resolvedById;
-        this.reviewedById = reviewedById;
-        this.closedById = closedById;
+        private String claimedBy;
+
+        private String closedBy;
+        private String date_closed; // new update
+        private String date_added; // new update
+
+
+        public Ticket(String ticketId, String discordThreadId,
+                      String title, String description, String status,
+                      String prUrl, String claimedBy, String closedBy,
+                      String priority, List<String> categories,
+                      String date_added, String date_closed) {
+            this.ticketId = ticketId;
+            this.title = title;
+            this.description = description;
+            this.priority = priority;
+            this.categories = categories;
+
+            this.discordThreadId = discordThreadId;
+            this.prUrl = prUrl;
+
+
+            this.status = status;
+
+            this.claimedBy = claimedBy;
+
+            this.closedBy = closedBy;
+            this.date_closed = date_closed;
+            this.date_added = date_added;
+
+            validateStatus();
+        }
+
+        private void validateStatus(){
+            switch (this.status){
+                case "OPEN" -> {}
+                case "CLAIMED" -> {}
+                case "PENDING-REVIEW" -> {}
+                case "REVIEWED" -> {}
+                case "RESOLVED" -> {}
+                case "CLOSED" -> {}
+                default -> {
+                    status = "OPEN";
+                }
+            }
+        }
+
+        // Getters
+
+        public String getTicketId() { return ticketId; }
+        public String getDiscordThreadId() { return discordThreadId; }
+        public String getTitle() { return title; }
+        public String getDescription() { return description; }
+        public String getStatus() { return status; }
+        public String getPrUrl() { return prUrl; }
+        public String getClaimedBy() { return claimedBy; }
+        public String getClosedBy() { return closedBy; }
+        public String getPriority() {return priority;}
+        public List<String> getCategories() {return categories;}
+        public String getDate_closed() {return date_closed;}
+        public String getDate_added() {return date_added;}
+
+        // Setters
+        public void setDiscordThreadId(String discordThreadId) { this.discordThreadId = discordThreadId; }
+        public void setTitle(String title) { this.title = title; }
+        public void setDescription(String description) { this.description = description; }
+        public void setStatus(String status) { this.status = status; }
+        public void setPrUrl(String prUrl) { this.prUrl = prUrl; }
+        public void setClaimedBy(String claimedBy) { this.claimedBy = claimedBy; }
+        public void setClosedBy(String closedBy) { this.closedBy = closedBy; }
+        public void setPriority(String priority) { this.priority = priority; }
+        public void setCategories(List<String> categories) { this.categories = categories; }
+        public void setDate_closed(String date_closed) { this.date_closed = date_closed; }
+        public void setDate_added(String date_added) { this.date_added = date_added; }
+        public void setTicketId(String ticketId) { this.ticketId = ticketId; }
+
     }
-}

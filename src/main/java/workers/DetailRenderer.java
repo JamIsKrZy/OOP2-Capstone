@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 import models.Ticket;
 import models.User;
 
+import java.util.stream.Collectors;
+
 public class DetailRenderer {
 
     private DetailRenderer() {}
@@ -28,35 +30,39 @@ public class DetailRenderer {
 
         HBox idHeader = new HBox(15);
         idHeader.setAlignment(Pos.CENTER_LEFT);
-        StackPane badge = new StackPane(new Label(t.id.substring(Math.max(0, t.id.length() - 3))));
+        String tid = t.getTicketId();
+        StackPane badge = new StackPane(new Label(tid.substring(Math.max(0, tid.length() - 3))));
         badge.getStyleClass().add("id-circle-badge");
         ((Label) badge.getChildren().get(0)).getStyleClass().add("id-circle-text");
 
-        VBox idTxt = new VBox(2, new Label(t.id), new Label(t.category));
+        String cats = t.getCategories() != null ? String.join(", ", t.getCategories()) : "N/A";
+        VBox idTxt = new VBox(2, new Label(tid), new Label(cats));
         idTxt.getChildren().get(0).setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         idTxt.getChildren().get(1).setStyle("-fx-text-fill: #6b7280;");
         idHeader.getChildren().addAll(badge, idTxt);
 
-        VBox content = new VBox(10, new Label(t.title), new Label(t.description));
+        VBox content = new VBox(10, new Label(t.getTitle()), new Label(t.getDescription()));
         content.getChildren().get(0).setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-wrap-text: true;");
         content.getChildren().get(1).setStyle("-fx-text-fill: #4b5563; -fx-wrap-text: true; -fx-line-spacing: 5;");
 
         VBox attrs = new VBox(20);
-        attrs.getChildren().add(row("🏷", "Status", createPill(t.status, statusStyleForStatus(t.status))));
-        attrs.getChildren().add(row("⚠", "Priority", createPill(t.priority, priorityStyleForPriority(t.priority))));
-        attrs.getChildren().add(row("📅", "Created", new Label(t.createdDate + "\nby " + t.createdBy)));
+        attrs.getChildren().add(row("🏷", "Status", createPill(t.getStatus(), statusStyleForStatus(t.getStatus()))));
+        attrs.getChildren().add(row("⚠", "Priority", createPill(t.getPriority(), priorityStyleForPriority(t.getPriority()))));
+        attrs.getChildren().add(row("📅", "Date Added", new Label(t.getDate_added())));
 
-        User assigneeUser = MockDataProvider.findUserById(t.assignedToId);
+        User assigneeUser = MockDataProvider.findUserById(t.getClaimedBy());
         if (assigneeUser != null) {
-            attrs.getChildren().add(row("👤", "Assigned To",
-                    new Label(assigneeUser.name + "\n" + assigneeUser.role)));
+            attrs.getChildren().add(row("👤", "Claimed By",
+                    new Label(assigneeUser.username + "\n" + assigneeUser.roleName)));
         }
 
         Label link = new Label("View Discussion");
         link.getStyleClass().add("link-text");
         attrs.getChildren().add(row("🔗", "Discord Thread", link));
 
-        attrs.getChildren().add(row("🕐", "Last Updated", new Label(t.lastUpdated)));
+        if (t.getDate_closed() != null) {
+            attrs.getChildren().add(row("🕐", "Date Closed", new Label(t.getDate_closed())));
+        }
 
         pane.getChildren().addAll(header, idHeader, content, attrs);
 
@@ -120,7 +126,7 @@ public class DetailRenderer {
 
     private static Button demoteButton(Ticket t, User actor, Runnable onRefresh) {
         if (!TicketWorkflow.canDemote(actor, t)) return null;
-        String label = demoteLabel(t.status);
+        String label = demoteLabel(t.getStatus());
         return mkButton(label, () -> {
             TicketWorkflow.demote(t, actor);
             onRefresh.run();
@@ -129,10 +135,10 @@ public class DetailRenderer {
 
     private static String demoteLabel(String status) {
         switch (status) {
-            case "In Progress":
+            case "CLAIMED":
                 return "Demote to Open";
-            case "Pending QA":
-                return "Demote to In Progress";
+            case "PENDING-REVIEW":
+                return "Demote to Claimed";
             default:
                 return "Demote";
         }
@@ -151,16 +157,18 @@ public class DetailRenderer {
     }
 
     private static String statusStyleForStatus(String status) {
+        if (status == null) return "status-open";
         switch (status) {
-            case "Open":
+            case "OPEN":
                 return "status-open";
-            case "In Progress":
+            case "CLAIMED":
                 return "status-progress";
-            case "Pending QA":
+            case "PENDING-REVIEW":
                 return "status-pending";
-            case "Approved":
+            case "REVIEWED":
+            case "RESOLVED":
                 return "status-approved";
-            case "Closed":
+            case "CLOSED":
                 return "status-closed";
             default:
                 return "status-open";
@@ -168,9 +176,9 @@ public class DetailRenderer {
     }
 
     private static String priorityStyleForPriority(String priority) {
+        if (priority == null) return "tag-feature";
         switch (priority) {
             case "Critical":
-                return "tag-bug";
             case "High":
                 return "tag-bug";
             case "Medium":
