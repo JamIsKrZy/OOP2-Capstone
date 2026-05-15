@@ -91,6 +91,7 @@ public class Ticket {
 
     public static List<Ticket> getTickets(){
         throw new UnsupportedOperationException("Not yet Implemented!");
+
     }
 
     public static Ticket getTicket(int id){

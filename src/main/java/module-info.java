@@ -6,6 +6,7 @@ module com.example.oop2_capstone {
     requires org.kordamp.bootstrapfx.core;
     requires java.net.http;
     requires java.prefs;
+    requires io.github.cdimascio.dotenv.java;
 
     opens com.example.oop2_capstone to javafx.fxml;
     opens models;
