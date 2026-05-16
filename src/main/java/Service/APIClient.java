@@ -34,6 +34,11 @@ public class APIClient {
     public static String get(String endpoint) throws Exception {
         // Build the full URL by combining Base + Endpoint
         String fullUrl = BASE_URL + endpoint;
+        System.out.println(fullUrl);
+
+        HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
 
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(fullUrl))
@@ -41,7 +46,7 @@ public class APIClient {
             .GET()
             .build();
 
-        HttpResponse<String> response = getClient().send(
+        HttpResponse<String> response = client.send(
             request,
             HttpResponse.BodyHandlers.ofString()
         );
