@@ -7,55 +7,48 @@
 <StackPane styleClass="login-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.login.LoginController">
 
     <!-- Centered Card -->
-    <HBox maxWidth="1100" maxHeight="650" styleClass="login-card">
+    <HBox maxWidth="1100" maxHeight="700" styleClass="login-card">
 
         <!-- LEFT SIDE: FORM -->
-        <VBox prefWidth="550" spacing="30" styleClass="login-left-pane" alignment="CENTER_LEFT">
+        <VBox prefWidth="550" spacing="35" styleClass="login-left-pane" alignment="CENTER_LEFT">
             <!-- Logo Section -->
-            <HBox spacing="12" alignment="CENTER_LEFT">
+            <HBox spacing="15" alignment="CENTER_LEFT">
                 <StackPane>
-                    <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#2563eb" height="35.0" width="35.0" />
-                    <Label text="TF" textFill="white" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+                    <Rectangle arcHeight="14.0" arcWidth="14.0" fill="#4f46e5" height="45.0" width="45.0" />
+                    <Label text="TF" textFill="white" style="-fx-font-weight: bold; -fx-font-size: 18;"/>
                 </StackPane>
                 <VBox>
-                    <Label text="TicketFlow" style="-fx-font-weight: bold; -fx-font-size: 18;"/>
-                    <Label text="Issue Tracking Workspace" style="-fx-text-fill: #6b7280; -fx-font-size: 12;"/>
+                    <Label text="TicketFlow" style="-fx-font-weight: bold; -fx-font-size: 22;"/>
+                    <Label text="Issue Tracking Workspace" style="-fx-text-fill: #6b7280; -fx-font-size: 14;"/>
                 </VBox>
             </HBox>
 
-            <VBox spacing="10">
-                <Label text="Welcome back" styleClass="login-title"/>
-                <Label text="Sign in to continue managing tickets and team workflows." styleClass="login-subtitle" wrapText="true"/>
+            <VBox spacing="12">
+                <Label text="Connect &amp; Sync" styleClass="login-title"/>
+                <Label text="Sign in with your Discord account to start managing tickets and collaborating with your team." styleClass="login-subtitle" wrapText="true"/>
             </VBox>
 
-            <VBox spacing="20">
+            <VBox spacing="20" alignment="CENTER_LEFT">
                 <VBox spacing="8">
-                    <Label text="Email" styleClass="form-label"/>
-                    <TextField fx:id="txtEmail" promptText="alice@example.com" styleClass="text-input-field"/>
+                    <Label text="Backend URL" styleClass="form-label"/>
+                    <TextField fx:id="txtBaseUrl" promptText="http://localhost:8080/api" styleClass="text-input-field"/>
                 </VBox>
-                <VBox spacing="8">
-                    <Label text="Password" styleClass="form-label"/>
-                    <!-- FIXED: promptText instead of title -->
-                    <PasswordField fx:id="txtPassword" promptText="••••••••" styleClass="text-input-field"/>
-                </VBox>
+                
+                <Button text="Login with Discord" maxWidth="Infinity" styleClass="btn-discord" onAction="#handleLogin"/>
+                <Label fx:id="lblStatus" text="Ready to authorize..." styleClass="waiting-label" visible="false"/>
+                <Label fx:id="lblError" wrapText="true" styleClass="status-error" visible="false" managed="false"/>
             </VBox>
 
             <HBox alignment="CENTER_LEFT">
-                <CheckBox fx:id="chkKeepLoggedIn" text="Keep me logged in" selected="true" style="-fx-text-fill: #374151;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Forgot Password" styleClass="forgot-link"/>
+                <CheckBox fx:id="chkKeepLoggedIn" text="Remember this device" selected="true" style="-fx-text-fill: #4b5563; -fx-font-size: 14px;"/>
             </HBox>
-
-            <Label fx:id="lblError" wrapText="true" style="-fx-text-fill: #b91c1c; -fx-font-size: 13px;" visible="false" managed="false"/>
-
-            <Button text="Sign in →" maxWidth="Infinity" styleClass="btn-login" onAction="#handleLogin"/>
         </VBox>
 
         <!-- RIGHT SIDE: BRANDING -->
-        <VBox prefWidth="550" spacing="25" styleClass="login-right-pane" alignment="CENTER_LEFT">
-            <Label text="WHAT TEAMS SAY" styleClass="teams-say"/>
-            <Label text="&quot;TicketFlow keeps approvals, priorities, and delivery in sync.&quot;" styleClass="quote-label" wrapText="true"/>
-            <Label text="Track critical work, route tickets fast, and keep everyone aligned from open to closed." styleClass="quote-sub" wrapText="true"/>
+        <VBox prefWidth="550" spacing="30" styleClass="login-right-pane" alignment="CENTER_LEFT">
+            <Label text="FOR MODERN TEAMS" styleClass="teams-say"/>
+            <Label text="&quot;TicketFlow brings Discord collaboration into a structured workspace.&quot;" styleClass="quote-label" wrapText="true"/>
+            <Label text="Seamlessly bridge the gap between chat and code. Track every requirement and approval in one place." styleClass="quote-sub" wrapText="true"/>
         </VBox>
 
     </HBox>
