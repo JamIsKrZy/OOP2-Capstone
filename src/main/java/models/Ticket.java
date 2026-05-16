@@ -59,7 +59,7 @@ public class Ticket {
             switch (this.status){
                 case "OPEN" -> {}
                 case "CLAIMED" -> {}
-                case "PENDING-REVIEW" -> {}
+                case "PENDING-REVIEW", "IN_REVIEW" -> {}
                 case "REVIEWED" -> {}
                 case "RESOLVED" -> {}
                 case "CLOSED" -> {}

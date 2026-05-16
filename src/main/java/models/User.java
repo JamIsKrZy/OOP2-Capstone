@@ -2,7 +2,10 @@ package models;
 
 import java.util.List;
 
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+    public int score; // Add score field for leaderboard compatibility
+
     public String userId;
     public String username;
     public String roleName;
