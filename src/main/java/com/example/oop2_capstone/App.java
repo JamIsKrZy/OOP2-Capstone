@@ -6,24 +6,42 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import models.User;
 import workers.AppPrefs;
-import workers.MockDataProvider;
 import workers.SessionManager;
 
 public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        String savedEmail = AppPrefs.prefs().get(AppPrefs.KEY_EMAIL, null);
+        // Load saved URL first
+        String savedUrl = workers.AppPrefs.prefs().get("BASE_URL", null);
+        if (savedUrl != null) {
+            Service.APIClient.setBaseUrl(savedUrl);
+        }
+
+        String savedEmail = workers.AppPrefs.prefs().get(workers.AppPrefs.KEY_EMAIL, null);
         if (savedEmail != null && !savedEmail.isBlank()) {
-            User u = MockDataProvider.findUserByEmail(savedEmail);
-            if (u != null) {
-                SessionManager.setLoggedUser(u);
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/MainLayout.fxml"));
-                Scene scene = new Scene(loader.load(), 1280, 800);
-                stage.setTitle("TicketFlow");
-                stage.setScene(scene);
-                stage.setMaximized(true);
-                stage.show();
-                return;
+            try {
+                // Try to fetch profile with the saved cookie
+                String profileJson = Service.APIClient.get("/profile?id=" + savedEmail);
+                if (profileJson != null && !profileJson.contains("\"error\"")) {
+                    // Manual parse
+                    String username = extract(profileJson, "username");
+                    String role = extract(profileJson, "roleName");
+                    int devScore = Integer.parseInt(extract(profileJson, "devScore"));
+                    int qaScore = Integer.parseInt(extract(profileJson, "qaScore"));
+
+                    User u = new User(savedEmail, username, role, devScore, qaScore);
+                    SessionManager.setLoggedUser(u);
+                    
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/MainLayout.fxml"));
+                    Scene scene = new Scene(loader.load(), 1280, 800);
+                    stage.setTitle("TicketFlow");
+                    stage.setScene(scene);
+                    stage.setMaximized(true);
+                    stage.show();
+                    return;
+                }
+            } catch (Exception e) {
+                System.err.println("Session validation failed: " + e.getMessage());
             }
             AppPrefs.prefs().remove(AppPrefs.KEY_EMAIL);
         }
@@ -34,6 +52,13 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
+    }
+
+    private String extract(String json, String key) {
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("\"" + key + "\":\\s*\"?([^\",}]*)\"?");
+        java.util.regex.Matcher m = p.matcher(json);
+        if (m.find()) return m.group(1).replace("\"", "");
+        return "";
     }
 
     public static void main(String[] args) {
