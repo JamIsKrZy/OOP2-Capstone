@@ -35,7 +35,7 @@ public class ProgressReportsController {
 
     private void populateReports(String roleFilter) {
         reportsContainer.getChildren().clear();
-        List<User> users = User.getUsers();
+        List<User> users = User.getUsers(roleFilter);
 
         int rank = 1;
         for (User u : users) {

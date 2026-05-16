@@ -26,8 +26,8 @@ public class MainController {
         return instance;
     }
 
-    @FXML private Button btnNavAvailable, btnNavMyTasks, btnNavReports, btnNavAdmin;
-    @FXML private VBox adminReportsSection, adminSystemSection, myTasksSection;
+    @FXML private Button btnNavAvailable, btnNavReports, btnNavAdmin;
+    @FXML private VBox adminReportsSection, adminSystemSection;
     @FXML private StackPane contentArea;
     @FXML private Label lblBreadcrumbCurrent, lblNotificationCount, sidebarUserName, sidebarUserRole, topbarUserName, topbarUserRole;
     @FXML private Text sidebarAvatarText;
@@ -96,8 +96,6 @@ public class MainController {
         User u = SessionManager.getLoggedUser();
         if (u == null) return;
         boolean isPm = "Project Manager".equals(u.roleName);
-        myTasksSection.setVisible(!isPm);
-        myTasksSection.setManaged(!isPm);
         adminSystemSection.setVisible(isPm);
         adminSystemSection.setManaged(isPm);
         adminReportsSection.setVisible(true);
@@ -123,17 +121,6 @@ public class MainController {
         setView("/app/AdminPanel.fxml");
     }
 
-    @FXML
-    private void navMyTasks() {
-        User u = SessionManager.getLoggedUser();
-        if (u != null && "QA".equals(u.roleName)) {
-            lblBreadcrumbCurrent.setText("Review Queue");
-        } else {
-            lblBreadcrumbCurrent.setText("My Tasks");
-        }
-        ViewContext.ticketMode = ViewContext.TicketViewMode.MY_TASKS;
-        setView("/app/TicketBoard.fxml");
-    }
 
     @FXML
     public void navProfile() {

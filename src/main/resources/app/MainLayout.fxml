@@ -34,20 +34,6 @@
                     <Insets left="12"/>
                 </padding>
             </Button>
-            <VBox fx:id="myTasksSection" spacing="0">
-                <Button fx:id="btnNavMyTasks" text="My Tasks" maxWidth="Infinity" styleClass="nav-button" onAction="#navMyTasks">
-                    <graphic>
-                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
-                            <image>
-                                <Image url="@icons/ICON - Available Tickets.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <padding>
-                        <Insets left="12"/>
-                    </padding>
-                </Button>
-            </VBox>
 
             <VBox fx:id="adminReportsSection">
                 <Label text="REPORTS" styleClass="nav-section-label"/>
