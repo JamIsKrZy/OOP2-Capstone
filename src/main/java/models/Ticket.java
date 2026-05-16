@@ -120,12 +120,46 @@ public class Ticket {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    public void push(){
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public void push() {
+        try {
+            String json = OBJECT_MAPPER.writeValueAsString(this);
+            APIClient.patch("tickets/" + this.ticketId, json);
+        } catch (Exception e) {
+            System.err.println("Failed to push ticket: " + e.getMessage());
+        }
     }
 
-    public void fetch(){
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public void fetch() {
+        try {
+            String json = APIClient.get("tickets/" + this.ticketId);
+            Ticket updated = OBJECT_MAPPER.readValue(json, Ticket.class);
+            updateFrom(updated);
+        } catch (Exception e) {
+            System.err.println("Failed to fetch ticket: " + e.getMessage());
+        }
+    }
+
+    public static Ticket create(Ticket t) {
+        try {
+            String json = OBJECT_MAPPER.writeValueAsString(t);
+            String response = APIClient.post("tickets", json);
+            return OBJECT_MAPPER.readValue(response, Ticket.class);
+        } catch (Exception e) {
+            System.err.println("Failed to create ticket: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void updateFrom(Ticket other) {
+        this.title = other.title;
+        this.description = other.description;
+        this.status = other.status;
+        this.priority = other.priority;
+        this.categories = other.categories;
+        this.claimedBy = other.claimedBy;
+        this.prUrl = other.prUrl;
+        this.closedBy = other.closedBy;
+        this.date_closed = other.date_closed;
     }
 
 

@@ -21,19 +21,19 @@ public final class TicketWorkflow {
     }
 
     public static boolean isPm(User u) {
-        return u != null && "Project Manager".equals(u.roleName);
+        return u != null && u.roleName != null && "Project Manager".equalsIgnoreCase(u.roleName.trim());
     }
 
     public static boolean isDev(User u) {
-        return u != null && "Developer".equals(u.roleName);
+        return u != null && u.roleName != null && "Developer".equalsIgnoreCase(u.roleName.trim());
     }
 
     public static boolean isQa(User u) {
-        return u != null && "QA".equals(u.roleName);
+        return u != null && u.roleName != null && "QA".equalsIgnoreCase(u.roleName.trim());
     }
 
     public static boolean canClaim(User u, Ticket t) {
-        return t != null && u != null && "OPEN".equals(t.getStatus()) && (isDev(u) || isPm(u));
+        return t != null && u != null && t.getStatus() != null && "OPEN".equalsIgnoreCase(t.getStatus().trim()) && (isDev(u) || isPm(u));
     }
 
     public static boolean canResolve(User u) {
@@ -45,23 +45,24 @@ public final class TicketWorkflow {
     }
 
     public static boolean canResolveTicket(User u, Ticket t) {
-        return t != null && u != null && "CLAIMED".equals(t.getStatus())
+        return t != null && u != null && t.getStatus() != null && "CLAIMED".equalsIgnoreCase(t.getStatus().trim())
                 && u.userId.equals(t.getClaimedBy()) && canResolve(u);
     }
 
     public static boolean canApprove(User u, Ticket t) {
-        return t != null && u != null && "PENDING-REVIEW".equals(t.getStatus()) && canReview(u);
+        return t != null && u != null && t.getStatus() != null && "PENDING-REVIEW".equalsIgnoreCase(t.getStatus().trim()) && canReview(u);
     }
 
     public static boolean canClose(User u, Ticket t) {
-        return t != null && u != null && ("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus()));
+        return t != null && u != null && t.getStatus() != null && ("REVIEWED".equalsIgnoreCase(t.getStatus().trim()) || "RESOLVED".equalsIgnoreCase(t.getStatus().trim()));
     }
 
     public static boolean canDemote(User u, Ticket t) {
-        if (t == null || u == null) return false;
+        if (t == null || u == null || t.getStatus() == null) return false;
+        String status = t.getStatus().trim();
         boolean assignOrPm = u.userId.equals(t.getClaimedBy()) || isPm(u);
-        return ("CLAIMED".equals(t.getStatus()) && assignOrPm && canResolve(u))
-                || ("PENDING-REVIEW".equals(t.getStatus()) && canReview(u));
+        return ("CLAIMED".equalsIgnoreCase(status) && assignOrPm && canResolve(u))
+                || ("PENDING-REVIEW".equalsIgnoreCase(status) && canReview(u));
     }
 
     public static void claim(Ticket t, User actor) {

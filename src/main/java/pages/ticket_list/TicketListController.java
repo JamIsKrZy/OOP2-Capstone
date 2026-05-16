@@ -20,7 +20,6 @@ import models.Ticket;
 import models.User;
 import pages.dashboard.MainController;
 import workers.DetailRenderer;
-import workers.MockDataProvider;
 import workers.SessionManager;
 import workers.ViewContext;
 
@@ -124,7 +123,8 @@ public class TicketListController {
     }
 
     private void populateDynamicOptions() {
-        List<Ticket> allTickets = MockDataProvider.getTickets();
+        List<Ticket> allTickets = Ticket.getTickets();
+        if (allTickets == null) return;
 
         // Get unique categories
         Set<String> categories = new HashSet<>();
@@ -259,7 +259,7 @@ public class TicketListController {
         StackPane prio = createCol(new StackPane(new Label(t.getPriority())), 100);
         prio.getChildren().get(0).getStyleClass().add("priority-" + t.getPriority().toLowerCase());
 
-        User u = MockDataProvider.findUserById(t.getClaimedBy());
+        User u = User.findUserById(t.getClaimedBy());
         String assigneeName = u != null ? u.username : "Unassigned";
         Label assignee = new Label(assigneeName);
         assignee.setStyle("-fx-text-fill: #111827;");
