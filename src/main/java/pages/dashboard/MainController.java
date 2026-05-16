@@ -136,6 +136,12 @@ public class MainController {
     }
 
     @FXML
+    public void navProfile() {
+        lblBreadcrumbCurrent.setText("My Profile");
+        setView("/app/Profile.fxml");
+    }
+
+    @FXML
     private void handleLogout(javafx.event.ActionEvent event) {
         try {
             SessionManager.cleanUserSession();

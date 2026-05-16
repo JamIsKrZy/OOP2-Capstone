@@ -140,7 +140,13 @@ public class DetailRenderer {
         if (!TicketWorkflow.canDemote(actor, t)) return null;
         String label = demoteLabel(t.getStatus());
         return mkButton(label, () -> {
-            TicketWorkflow.demote(t, actor);
+            if ("PENDING-REVIEW".equals(t.getStatus())) {
+                TicketWorkflow.unresolve(t, actor);
+            } else if ("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) {
+                TicketWorkflow.unreview(t, actor);
+            } else {
+                TicketWorkflow.demote(t, actor);
+            }
             onRefresh.run();
         });
     }
@@ -150,7 +156,10 @@ public class DetailRenderer {
             case "CLAIMED":
                 return "Demote to Open";
             case "PENDING-REVIEW":
-                return "Demote to Claimed";
+                return "Unresolve (Back to Claimed)";
+            case "REVIEWED":
+            case "RESOLVED":
+                return "Unreview (Back to Pending)";
             default:
                 return "Demote";
         }

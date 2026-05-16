@@ -90,12 +90,34 @@ public final class TicketWorkflow {
         }
     }
 
+    public static void unresolve(Ticket t, User actor) {
+        if (t == null || actor == null) return;
+        try {
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/unresolve", "{}");
+            t.setStatus("CLAIMED");
+            actor.devScore--;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void approve(Ticket t, User actor) {
         if (!canApprove(actor, t)) return;
         try {
             Service.APIClient.patch("/tickets/" + t.getTicketId() + "/review", "{}");
             t.setStatus("REVIEWED");
             actor.qaScore++;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void unreview(Ticket t, User actor) {
+        if (t == null || actor == null) return;
+        try {
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/unreview", "{}");
+            t.setStatus("PENDING-REVIEW");
+            actor.qaScore--;
         } catch (Exception e) {
             e.printStackTrace();
         }
