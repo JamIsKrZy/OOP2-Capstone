@@ -49,21 +49,21 @@ import workers.SessionManager;
                    || (u.roleName != null && u.roleName.toLowerCase().contains(currentSearchQuery));
        }
 
-     public void refreshTable() {
-         userListContainer.getChildren().clear();
-         int i = 0;
-         List<User> users = MockDataProvider.getUsers();
-         // Filter by search query
-         if (!currentSearchQuery.isEmpty()) {
-             users = users.stream().filter(this::userMatchesSearch).collect(Collectors.toList());
-           }
-         for (User u : users) {
-             HBox row = createUserRow(u);
-             if (i % 2 != 0) row.getStyleClass().add("list-row-alt");
-             userListContainer.getChildren().add(row);
-             i++;
-           }
-       }
+    public void refreshTable() {
+        userListContainer.getChildren().clear();
+        int i = 0;
+        List<User> users = User.getUsers();
+        // Filter by search query
+        if (!currentSearchQuery.isEmpty()) {
+            users = users.stream().filter(this::userMatchesSearch).collect(Collectors.toList());
+        }
+        for (User u : users) {
+            HBox row = createUserRow(u);
+            if (i % 2 != 0) row.getStyleClass().add("list-row-alt");
+            userListContainer.getChildren().add(row);
+            i++;
+        }
+    }
 
     private HBox createUserRow(User u) {
         HBox row = new HBox(20);
@@ -116,12 +116,14 @@ import workers.SessionManager;
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(newRole -> {
             u.roleName = newRole;
-            refreshTable();
+            u.push();
             User logged = SessionManager.getLoggedUser();
             if (logged != null && logged.userId.equals(u.userId)) {
+                logged.roleName = newRole;
                 MainController mc = MainController.getInstance();
                 if (mc != null) mc.refreshProfileAndNav();
             }
+            refreshTable();
         });
     }
 
@@ -144,6 +146,44 @@ import workers.SessionManager;
             MockDataProvider.deleteUserById(u.userId);
             refreshTable();
         }
+    }
+
+    @FXML
+    private void handleLoadTickets() {
+        TextInputDialog folderDialog = new TextInputDialog("tickets");
+        folderDialog.setTitle("Load Tickets");
+        folderDialog.setHeaderText("Specify folder containing ticket Markdown files");
+        folderDialog.showAndWait().ifPresent(folder -> {
+            TextInputDialog channelDialog = new TextInputDialog();
+            channelDialog.setTitle("Target Channel");
+            channelDialog.setHeaderText("Specify Discord Text Channel ID");
+            channelDialog.showAndWait().ifPresent(channelId -> {
+                try {
+                    String jsonBody = String.format("{\"folder\": \"%s\", \"channelId\": %s}", folder, channelId);
+                    String response = Service.APIClient.post("/tickets/load", jsonBody);
+                    new Alert(Alert.AlertType.INFORMATION, response).showAndWait();
+                } catch (Exception e) {
+                    new Alert(Alert.AlertType.ERROR, "Failed to load tickets: " + e.getMessage()).showAndWait();
+                }
+            });
+        });
+    }
+
+    @FXML
+    private void handleRebuildDatabase() {
+        TextInputDialog channelDialog = new TextInputDialog();
+        channelDialog.setTitle("Rebuild Database");
+        channelDialog.setHeaderText("Specify Discord Text Channel ID to scan");
+        channelDialog.showAndWait().ifPresent(channelId -> {
+            try {
+                String jsonBody = String.format("{\"channelId\": %s}", channelId);
+                String response = Service.APIClient.post("/tickets/rebuild", jsonBody);
+                new Alert(Alert.AlertType.INFORMATION, response).showAndWait();
+                refreshTable();
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to rebuild database: " + e.getMessage()).showAndWait();
+            }
+        });
     }
 
     @FXML

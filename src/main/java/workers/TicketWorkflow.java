@@ -66,41 +66,67 @@ public final class TicketWorkflow {
 
     public static void claim(Ticket t, User actor) {
         if (!canClaim(actor, t)) return;
-        t.setStatus("CLAIMED");
-        t.setClaimedBy(actor.userId);
+        try {
+            String jsonBody = String.format("{\"userId\": %s}", actor.userId);
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/claim", jsonBody);
+            t.setStatus("CLAIMED");
+            t.setClaimedBy(actor.userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void resolve(Ticket t, User actor) {
+    public static void resolve(Ticket t, User actor, String prUrl) {
         if (!canResolveTicket(actor, t)) return;
-        t.setStatus("PENDING-REVIEW");
-        actor.devScore++;
+        try {
+            String jsonBody = String.format("{\"prUrl\": \"%s\"}", prUrl);
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/resolve", jsonBody);
+            t.setStatus("PENDING-REVIEW");
+            t.setPrUrl(prUrl);
+            actor.devScore++;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void approve(Ticket t, User actor) {
         if (!canApprove(actor, t)) return;
-        t.setStatus("REVIEWED");
-        actor.qaScore++;
+        try {
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/review", "{}");
+            t.setStatus("REVIEWED");
+            actor.qaScore++;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void close(Ticket t, User actor) {
         if (!canClose(actor, t)) return;
-        t.setStatus("CLOSED");
-        t.setClosedBy(actor.userId);
-        t.setDate_closed(today());
+        try {
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/close", "{}");
+            t.setStatus("CLOSED");
+            t.setClosedBy(actor.userId);
+            t.setDate_closed(today());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void demote(Ticket t, User actor) {
         if (!canDemote(actor, t)) return;
-        switch (t.getStatus()) {
-            case "CLAIMED":
-                t.setStatus("OPEN");
-                t.setClaimedBy(null);
-                break;
-            case "PENDING-REVIEW":
-                t.setStatus("CLAIMED");
-                break;
-            default:
-                return;
+        try {
+            Service.APIClient.patch("/tickets/" + t.getTicketId() + "/demote", "{}");
+            switch (t.getStatus()) {
+                case "CLAIMED":
+                    t.setStatus("OPEN");
+                    t.setClaimedBy(null);
+                    break;
+                case "PENDING-REVIEW":
+                    t.setStatus("CLAIMED");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -7,9 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import models.DemoCredentials;
 import models.User;
-import workers.MockDataProvider;
 
 public class AddUserController {
 
@@ -55,17 +53,16 @@ public class AddUserController {
         if (username.isEmpty() || userId.isEmpty() || password.isEmpty()) {
             return;
         }
-        if (MockDataProvider.findUserById(userId) != null) {
+        if (User.findUserById(userId) != null) {
             return;
         }
 
         // User(userId, username, roleName, devScore, qaScore)
         User user = new User(userId, username, role, 0, 0);
         
-        // DemoCredentials still uses "email" as a key, I'll use username or userId
-        DemoCredentials.registerPassword(username, password);
+        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING, 
+            "Manual user creation is not yet supported. Please login via Discord.").showAndWait();
         
-        MockDataProvider.addUser(user);
         handleCancel();
     }
 }

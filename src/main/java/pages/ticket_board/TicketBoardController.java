@@ -19,7 +19,6 @@ import models.Ticket;
 import models.User;
 import pages.dashboard.MainController;
 import workers.DetailRenderer;
-import workers.MockDataProvider;
 import workers.SessionManager;
 import workers.ViewContext;
 
@@ -68,7 +67,7 @@ public class TicketBoardController {
      private boolean ticketMatchesBoardSearch(Ticket t) {
          if (boardSearchQuery.isEmpty()) return true;
          String cats = t.getCategories() != null ? String.join(", ", t.getCategories()) : "";
-         User u = MockDataProvider.findUserById(t.getClaimedBy());
+         User u = User.findUserById(t.getClaimedBy());
          String assigneeName = u != null ? u.username : "Unassigned";
          
          return (t.getTitle() != null && t.getTitle().toLowerCase().contains(boardSearchQuery))
@@ -118,7 +117,8 @@ public class TicketBoardController {
        }
 
     private List<Ticket> visibleTickets() {
-        List<Ticket> all = MockDataProvider.getTickets();
+        List<Ticket> all = Ticket.getTickets();
+        if (all == null) all = new ArrayList<>();
         if (ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE) {
             return all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
         }
