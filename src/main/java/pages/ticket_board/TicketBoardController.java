@@ -103,6 +103,7 @@ public class TicketBoardController {
                      colInProgress.getChildren().add(card);
                      break;
                  case "PENDING-REVIEW":
+                 case "IN_REVIEW":
                      colPendingQA.getChildren().add(card);
                      break;
                  case "REVIEWED":
@@ -134,6 +135,7 @@ public class TicketBoardController {
         if ("QA".equals(u.roleName)) {
             return nonClosed.stream().filter(t ->
                      "PENDING-REVIEW".equals(t.getStatus())
+                            || "IN_REVIEW".equals(t.getStatus())
                             || (("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) && u.userId.equals(t.getClosedBy()))
             ).collect(Collectors.toList());
         }
