@@ -24,6 +24,7 @@ import workers.SessionManager;
  public class AdminPanelController {
      @FXML private VBox userListContainer;
      @FXML private TextField userSearchField;
+     @FXML private Label totalUsersLabel, activeUsersLabel, activeTicketsLabel, closedTicketsLabel;
 
      private String currentSearchQuery = "";
 
@@ -31,6 +32,7 @@ import workers.SessionManager;
      public void initialize() {
          initializeUserSearch();
          refreshTable();
+         refreshStats();
        }
 
      private void initializeUserSearch() {
@@ -51,7 +53,7 @@ import workers.SessionManager;
     public void refreshTable() {
         userListContainer.getChildren().clear();
         int i = 0;
-        List<User> users = User.getUsers("dev");
+        List<User> users = User.getUsers("all");
         // Filter by search query
         if (!currentSearchQuery.isEmpty()) {
             users = users.stream().filter(this::userMatchesSearch).collect(Collectors.toList());
@@ -105,6 +107,20 @@ import workers.SessionManager;
 
         row.getChildren().addAll(nameBox, userIdLabel, rolePane, actions);
         return row;
+    }
+
+    private void refreshStats() {
+        try {
+            String json = Service.APIClient.get("/stats");
+            com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(json);
+            
+            if (totalUsersLabel != null) totalUsersLabel.setText(String.valueOf(node.get("totalUsers").asInt()));
+            if (activeUsersLabel != null) activeUsersLabel.setText(String.valueOf(node.get("activeUsers").asInt()));
+            if (activeTicketsLabel != null) activeTicketsLabel.setText(String.valueOf(node.get("activeTickets").asInt()));
+            if (closedTicketsLabel != null) closedTicketsLabel.setText(String.valueOf(node.get("closedTickets").asInt()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void editRole(User u) {

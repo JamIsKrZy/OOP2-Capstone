@@ -22,9 +22,9 @@
         <Button text="Rebuild Database" styleClass="btn, btn-primary" onAction="#handleRebuildDatabase"/>
     </HBox>
     <HBox spacing="20">
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Total Users" styleClass="stat-label"/><Label text="5" styleClass="stat-value"/></VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Users" styleClass="stat-label" style="-fx-text-fill: #059669;"/><Label text="5" styleClass="stat-value" style="-fx-text-fill: #059669;"/></VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Tickets" styleClass="stat-label"/><Label text="9" styleClass="stat-value"/></VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Closed Tickets" styleClass="stat-label"/><Label text="1" styleClass="stat-value"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Total Users" styleClass="stat-label"/><Label fx:id="totalUsersLabel" text="-" styleClass="stat-value"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Users" styleClass="stat-label" style="-fx-text-fill: #059669;"/><Label fx:id="activeUsersLabel" text="-" styleClass="stat-value" style="-fx-text-fill: #059669;"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Active Tickets" styleClass="stat-label"/><Label fx:id="activeTicketsLabel" text="-" styleClass="stat-value"/></VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS"><Label text="Closed Tickets" styleClass="stat-label"/><Label fx:id="closedTicketsLabel" text="-" styleClass="stat-value"/></VBox>
     </HBox>
 </VBox>
