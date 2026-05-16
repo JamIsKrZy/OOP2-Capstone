@@ -83,15 +83,6 @@
 
                 <HBox alignment="CENTER" spacing="20">
                     <!-- NOTIFICATION BUTTON -->
-                    <HBox alignment="CENTER" spacing="10" onMouseClicked="#toggleNotifications" styleClass="notif-button" pickOnBounds="true" style="-fx-cursor: hand;">
-                        <ImageView fitWidth="18" fitHeight="18" preserveRatio="true" pickOnBounds="true">
-                            <image>
-                                <Image url="@icons/ICON - Notifications.png"/>
-                            </image>
-                        </ImageView>
-                        <Label text="Notifications" styleClass="notif-label" pickOnBounds="true"/>
-                        <Label fx:id="lblNotificationCount" text="3" styleClass="notif-count-text" pickOnBounds="true"/>
-                    </HBox>
 
                     <VBox alignment="CENTER_RIGHT">
                         <Label fx:id="topbarUserName" text="User" style="-fx-font-weight: bold;"/>

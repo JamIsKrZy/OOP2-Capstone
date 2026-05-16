@@ -14,7 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import models.User;
-import pages.notification_popup.NotificationPopupController;
 import workers.AppPrefs;
 import workers.SessionManager;
 import workers.ViewContext;
@@ -29,7 +28,7 @@ public class MainController {
     @FXML private Button btnNavAvailable, btnNavReports, btnNavAdmin;
     @FXML private VBox adminReportsSection, adminSystemSection;
     @FXML private StackPane contentArea;
-    @FXML private Label lblBreadcrumbCurrent, lblNotificationCount, sidebarUserName, sidebarUserRole, topbarUserName, topbarUserRole;
+    @FXML private Label lblBreadcrumbCurrent, sidebarUserName, sidebarUserRole, topbarUserName, topbarUserRole;
     @FXML private Text sidebarAvatarText;
 
     @FXML
@@ -144,25 +143,4 @@ public class MainController {
         }
     }
 
-    private NotificationPopupController notificationPopupController;
-
-    @FXML
-    private void toggleNotifications(javafx.scene.input.MouseEvent event) {
-        if (notificationPopupController == null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/NotificationPopup.fxml"));
-                javafx.scene.Parent root = loader.load();
-
-                notificationPopupController = loader.getController();
-             } catch (Exception e) {
-                e.printStackTrace();
-             }
-          }
-
-        if (notificationPopupController.isPopupShown()) {
-            notificationPopupController.closePopup();
-         } else {
-            notificationPopupController.showNotificationsPopup(event);
-         }
-      }
 }
