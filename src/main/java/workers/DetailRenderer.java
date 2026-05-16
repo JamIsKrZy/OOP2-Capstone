@@ -64,12 +64,18 @@ public class DetailRenderer {
             attrs.getChildren().add(row("🕐", "Date Closed", new Label(t.getDate_closed())));
         }
 
-        pane.getChildren().addAll(header, idHeader, content, attrs);
-
         VBox actions = buildActions(t, actor, onRefresh);
+        
+        Label roleDebug = new Label("Logged as: " + (actor != null ? actor.roleName : "Guest"));
+        roleDebug.setStyle("-fx-text-fill: #9ca3af; -fx-font-size: 10px;");
+
+        pane.getChildren().add(roleDebug);
+
         if (!actions.getChildren().isEmpty()) {
             pane.getChildren().add(actions);
         }
+
+        pane.getChildren().addAll(header, idHeader, content, attrs);
     }
 
     private static VBox buildActions(Ticket t, User actor, Runnable onRefresh) {

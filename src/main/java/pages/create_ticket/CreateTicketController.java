@@ -7,12 +7,10 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import models.Ticket;
 import models.User;
-import workers.MockDataProvider;
 import workers.SessionManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 
 public class CreateTicketController {
@@ -56,12 +54,10 @@ public class CreateTicketController {
         String desc = txtDesc.getText() != null ? txtDesc.getText().trim() : "";
         String today = LocalDate.now().format(DATE_FMT);
 
-        String id = MockDataProvider.nextTicketId();
-        
         // Ticket(ticketId, discordThreadId, title, description, status, prUrl, claimedBy, closedBy, priority, categories, date_added, date_closed)
         Ticket t = new Ticket(
-                id,
-                "12345", // dummy discord thread
+                null, // backend generates UUID
+                null, // No discord thread
                 title,
                 desc,
                 status,
@@ -69,7 +65,7 @@ public class CreateTicketController {
                 null, // claimedBy
                 null, // closedBy
                 comboPriority.getValue(),
-                List.of(comboCategory.getValue()),
+                java.util.List.of(comboCategory.getValue()),
                 today,
                 null // date_closed
         );
@@ -78,7 +74,12 @@ public class CreateTicketController {
             t.setClaimedBy(creator.userId);
         }
 
-        MockDataProvider.addTicket(t);
-        handleCancel();
+        Ticket created = Ticket.create(t);
+        if (created != null) {
+            handleCancel();
+        } else {
+            // Show error
+            System.err.println("Failed to create ticket via API");
+        }
     }
 }

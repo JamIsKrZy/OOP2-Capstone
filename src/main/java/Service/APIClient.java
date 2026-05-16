@@ -106,6 +106,25 @@ public class APIClient {
         return response.body();
     }
 
+    public static String delete(String endpoint) throws Exception {
+        String fullUrl = baseUrl + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
+        System.out.println("DELETE: " + fullUrl);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(fullUrl))
+                .header("Accept", "application/json")
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = getClient().send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        saveSession();
+        return response.body();
+    }
+
     public static HttpResponse<String> getRaw(String endpoint, boolean followRedirects) throws Exception {
         String fullUrl = baseUrl + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
         

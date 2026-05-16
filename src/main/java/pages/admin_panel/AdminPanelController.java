@@ -19,7 +19,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.User;
 import pages.dashboard.MainController;
-import workers.MockDataProvider;
 import workers.SessionManager;
 
  public class AdminPanelController {
@@ -133,18 +132,19 @@ import workers.SessionManager;
             new Alert(Alert.AlertType.WARNING, "You cannot delete your own account.").showAndWait();
             return;
         }
-        if ("Project Manager".equals(u.roleName) && MockDataProvider.countUsersWithRole("Project Manager") <= 1) {
-            new Alert(Alert.AlertType.WARNING, "Cannot delete the last Project Manager.").showAndWait();
-            return;
-        }
+
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Delete user");
         confirm.setHeaderText("Delete " + u.username + "?");
         confirm.setContentText("This cannot be undone.");
         Optional<ButtonType> ok = confirm.showAndWait();
         if (ok.isPresent() && ok.get() == ButtonType.OK) {
-            MockDataProvider.deleteUserById(u.userId);
-            refreshTable();
+            try {
+                Service.APIClient.delete("/user/" + u.userId);
+                refreshTable();
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to delete user: " + e.getMessage()).showAndWait();
+            }
         }
     }
 
