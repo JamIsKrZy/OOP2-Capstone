@@ -66,6 +66,46 @@ public class APIClient {
         return response.body();
     }
 
+    public static String post(String endpoint, String jsonBody) throws Exception {
+        String fullUrl = baseUrl + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
+        System.out.println("POST: " + fullUrl);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(fullUrl))
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+            .build();
+
+        HttpResponse<String> response = getClient().send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        saveSession();
+        return response.body();
+    }
+
+    public static String patch(String endpoint, String jsonBody) throws Exception {
+        String fullUrl = baseUrl + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
+        System.out.println("PATCH: " + fullUrl);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(fullUrl))
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
+            .build();
+
+        HttpResponse<String> response = getClient().send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        saveSession();
+        return response.body();
+    }
+
     public static HttpResponse<String> getRaw(String endpoint, boolean followRedirects) throws Exception {
         String fullUrl = baseUrl + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
         

@@ -10,7 +10,6 @@ import javafx.stage.Popup;
 import javafx.scene.input.MouseEvent;
 import models.Notification;
 import models.Ticket;
-import workers.MockDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class NotificationPopupController {
 
              // Create mock notifications based on active tickets
             List<Notification> notifications = new ArrayList<>();
-            List<Ticket> tickets = MockDataProvider.getTickets();
+            List<Ticket> tickets = Ticket.getTickets();
 
              // Add some sample notifications
             notifications.add(new Notification("New Bug Report",

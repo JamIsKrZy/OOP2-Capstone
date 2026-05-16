@@ -1,9 +1,7 @@
 package models;
 
 import Service.APIClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -22,11 +20,14 @@ public class Ticket {
         private String claimedBy;
 
         private String closedBy;
+        @com.fasterxml.jackson.annotation.JsonProperty("dateClosed")
         private String date_closed; // new update
+        @com.fasterxml.jackson.annotation.JsonProperty("dateAdded")
         private String date_added; // new update
 
         private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+        public Ticket() {}
 
         public Ticket(String ticketId, String discordThreadId,
                       String title, String description, String status,
@@ -102,15 +103,14 @@ public class Ticket {
         List<Ticket> tickets = null;
         try {
             request_body = APIClient.get("tickets/list");
-            tickets = OBJECT_MAPPER.readValue(request_body, new TypeReference<List<Ticket>>() {});
-        } catch (JsonMappingException e) {
-            throw new RuntimeException(e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            if (request_body != null && request_body.startsWith("[")) {
+                tickets = OBJECT_MAPPER.readValue(request_body, new TypeReference<List<Ticket>>() {});
+            } else {
+                System.out.println("API responded with non-JSON or error: " + request_body);
+            }
         } catch (Exception e) {
+            System.err.println("Failed to parse tickets: " + e.getMessage());
             e.printStackTrace();
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
         }
 
         return tickets ;

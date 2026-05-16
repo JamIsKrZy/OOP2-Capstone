@@ -8,7 +8,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import models.User;
-import workers.MockDataProvider;
 
 import java.util.List;
 
@@ -36,11 +35,11 @@ public class ProgressReportsController {
 
     private void populateReports(String roleFilter) {
         reportsContainer.getChildren().clear();
-        List<User> users = MockDataProvider.getUsers();
+        List<User> users = User.getUsers();
 
         int rank = 1;
         for (User u : users) {
-            if (u.roleName.equals(roleFilter)) {
+            if (roleFilter.equals(u.roleName)) {
                 reportsContainer.getChildren().add(createReportCard(u, roleFilter.equals("Developer"), rank));
                 rank++;
             }

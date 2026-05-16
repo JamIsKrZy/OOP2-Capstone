@@ -141,7 +141,7 @@ public class TicketListController {
         Set<String> assignees = new HashSet<>();
         assignees.add("Unassigned");
         for (Ticket t : allTickets) {
-            User u = MockDataProvider.findUserById(t.getClaimedBy());
+            User u = User.findUserById(t.getClaimedBy());
             if (u != null) {
                 assignees.add(u.username);
             }
@@ -187,7 +187,7 @@ public class TicketListController {
 
         // Filter by assignee
         if (!"All".equals(selectedAssignee)) {
-            User u = MockDataProvider.findUserById(t.getClaimedBy());
+            User u = User.findUserById(t.getClaimedBy());
             String ticketAssignee = u != null ? u.username : "Unassigned";
             if (!ticketAssignee.equals(selectedAssignee)) {
                 return false;
@@ -213,7 +213,8 @@ public class TicketListController {
     }
 
     private List<Ticket> visibleTickets() {
-        List<Ticket> all = MockDataProvider.getTickets();
+        List<Ticket> all = Ticket.getTickets();
+        if (all == null) all = new ArrayList<>();
         if (ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE) {
             return all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
         }

@@ -50,7 +50,7 @@ public class DetailRenderer {
         attrs.getChildren().add(row("⚠", "Priority", createPill(t.getPriority(), priorityStyleForPriority(t.getPriority()))));
         attrs.getChildren().add(row("📅", "Date Added", new Label(t.getDate_added())));
 
-        User assigneeUser = MockDataProvider.findUserById(t.getClaimedBy());
+        User assigneeUser = User.findUserById(t.getClaimedBy());
         if (assigneeUser != null) {
             attrs.getChildren().add(row("👤", "Claimed By",
                     new Label(assigneeUser.username + "\n" + assigneeUser.roleName)));
@@ -105,8 +105,14 @@ public class DetailRenderer {
         }
         if (TicketWorkflow.canResolveTicket(actor, t)) {
             return mkButton("Mark as Resolved", () -> {
-                TicketWorkflow.resolve(t, actor);
-                onRefresh.run();
+                javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog();
+                dialog.setTitle("Resolve Ticket");
+                dialog.setHeaderText("Submit Pull Request URL");
+                dialog.setContentText("PR URL:");
+                dialog.showAndWait().ifPresent(prUrl -> {
+                    TicketWorkflow.resolve(t, actor, prUrl);
+                    onRefresh.run();
+                });
             });
         }
         if (TicketWorkflow.canApprove(actor, t)) {
