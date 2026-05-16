@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<VBox spacing="30" style="-fx-background-color: #f9fafb;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pages.profile.ProfileController">
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+    
+    <VBox spacing="10">
+        <Label text="My Profile" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+        <Label text="Manage your account settings and role preferences." style="-fx-text-fill: #6b7280; -fx-font-size: 16px;"/>
+    </VBox>
+
+    <HBox spacing="40" alignment="TOP_LEFT">
+        <!-- Profile Card -->
+        <VBox spacing="25" style="-fx-background-color: white; -fx-padding: 40; -fx-background-radius: 16; -fx-border-color: #e5e7eb; -fx-border-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" prefWidth="400">
+            <VBox alignment="CENTER" spacing="15">
+                <StackPane>
+                    <Circle radius="50" fill="#374151"/>
+                    <Text fx:id="avatarText" text="U" fill="white" style="-fx-font-size: 36px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <VBox alignment="CENTER" spacing="5">
+                    <Label fx:id="usernameLabel" text="Username" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                    <Label fx:id="roleLabel" text="Developer" styleClass="tag" style="-fx-background-color: #ecfdf5; -fx-text-fill: #059669; -fx-font-size: 14px;"/>
+                </VBox>
+            </VBox>
+
+            <Separator/>
+
+            <VBox spacing="20">
+                <VBox spacing="8">
+                    <Label text="User ID" style="-fx-font-weight: bold; -fx-text-fill: #374151; -fx-font-size: 13px;"/>
+                    <Label fx:id="userIdLabel" text="123456789" style="-fx-text-fill: #6b7280;"/>
+                </VBox>
+                <VBox spacing="8">
+                    <Label text="Discord Account" style="-fx-font-weight: bold; -fx-text-fill: #374151; -fx-font-size: 13px;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Connected" style="-fx-text-fill: #059669; -fx-font-weight: 600;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Settings Card -->
+        <VBox spacing="30" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 40; -fx-background-radius: 16; -fx-border-color: #e5e7eb; -fx-border-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+            <VBox spacing="20">
+                <Label text="Role Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                <Label text="Update your role to gain access to different commands. Note that changing your role will also update your permissions in the Discord server." wrapText="true" style="-fx-text-fill: #6b7280;"/>
+                
+                <VBox spacing="15" style="-fx-padding: 20 0 0 0;">
+                    <Label text="Select your primary role:" style="-fx-font-weight: 600; -fx-text-fill: #374151;"/>
+                    <ComboBox fx:id="roleComboBox" prefWidth="300" styleClass="search-field"/>
+                    <Button text="Update Role" styleClass="btn, btn-primary" onAction="#handleUpdateRole" prefWidth="150" prefHeight="40"/>
+                </VBox>
+            </VBox>
+            
+            <Separator/>
+            
+            <VBox spacing="20">
+                <Label text="Performance Stats" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                <HBox spacing="20">
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" style="-fx-background-color: #eff6ff;">
+                        <Label text="Dev Tickets" styleClass="stat-label" style="-fx-text-fill: #2563eb;"/>
+                        <Label fx:id="devScoreLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #1e40af;"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" style="-fx-background-color: #f5f3ff;">
+                        <Label text="QA Reviews" styleClass="stat-label" style="-fx-text-fill: #7c3aed;"/>
+                        <Label fx:id="qaScoreLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #5b21b6;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

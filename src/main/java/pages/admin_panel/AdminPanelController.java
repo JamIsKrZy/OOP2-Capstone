@@ -150,23 +150,41 @@ import workers.SessionManager;
 
     @FXML
     private void handleLoadTickets() {
-        TextInputDialog folderDialog = new TextInputDialog("tickets");
-        folderDialog.setTitle("Load Tickets");
-        folderDialog.setHeaderText("Specify folder containing ticket Markdown files");
-        folderDialog.showAndWait().ifPresent(folder -> {
-            TextInputDialog channelDialog = new TextInputDialog();
-            channelDialog.setTitle("Target Channel");
-            channelDialog.setHeaderText("Specify Discord Text Channel ID");
-            channelDialog.showAndWait().ifPresent(channelId -> {
-                try {
-                    String jsonBody = String.format("{\"folder\": \"%s\", \"channelId\": %s}", folder, channelId);
-                    String response = Service.APIClient.post("/tickets/load", jsonBody);
-                    new Alert(Alert.AlertType.INFORMATION, response).showAndWait();
-                } catch (Exception e) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to load tickets: " + e.getMessage()).showAndWait();
-                }
+        try {
+            // Fetch available folders from backend
+            String jsonFolders = Service.APIClient.get("/tickets/folders");
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            List<String> folders = mapper.readValue(jsonFolders, new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+
+            if (folders.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "No ticket folders found in the configured directory.").showAndWait();
+                return;
+            }
+
+            ChoiceDialog<String> folderDialog = new ChoiceDialog<>(folders.get(0), folders);
+            folderDialog.setTitle("Load Tickets");
+            folderDialog.setHeaderText("Select folder containing ticket Markdown files");
+            folderDialog.setContentText("Folder:");
+            
+            folderDialog.showAndWait().ifPresent(folder -> {
+                TextInputDialog channelDialog = new TextInputDialog("1331252119041212448"); // Default or empty
+                channelDialog.setTitle("Target Channel");
+                channelDialog.setHeaderText("Specify Discord Text Channel ID");
+                channelDialog.setContentText("Channel ID:");
+                
+                channelDialog.showAndWait().ifPresent(channelId -> {
+                    try {
+                        String jsonBody = String.format("{\"folder\": \"%s\", \"channelId\": \"%s\"}", folder, channelId);
+                        String response = Service.APIClient.post("/tickets/load", jsonBody);
+                        new Alert(Alert.AlertType.INFORMATION, response).showAndWait();
+                    } catch (Exception e) {
+                        new Alert(Alert.AlertType.ERROR, "Failed to load tickets: " + e.getMessage()).showAndWait();
+                    }
+                });
             });
-        });
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to fetch folders: " + e.getMessage()).showAndWait();
+        }
     }
 
     @FXML

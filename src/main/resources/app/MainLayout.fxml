@@ -82,7 +82,7 @@
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="profile-box">
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="profile-box" onMouseClicked="#navProfile" style="-fx-cursor: hand;">
                 <StackPane><Circle radius="18" fill="#1f2937"/><Text fx:id="sidebarAvatarText" text="AJ" fill="white" style="-fx-font-weight: bold;"/></StackPane>
                 <VBox alignment="CENTER_LEFT"><Label fx:id="sidebarUserName" text="User" styleClass="profile-name"/><Label fx:id="sidebarUserRole" text="Role" styleClass="profile-role"/></VBox>
             </HBox>
