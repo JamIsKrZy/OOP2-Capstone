@@ -68,7 +68,7 @@ public final class TicketWorkflow {
     public static void claim(Ticket t, User actor) {
         if (!canClaim(actor, t)) return;
         try {
-            String jsonBody = String.format("{\"userId\": %s}", actor.userId);
+            String jsonBody = String.format("{\"userId\": \"%s\"}", actor.userId);
             Service.APIClient.patch("/tickets/" + t.getTicketId() + "/claim", jsonBody);
             t.setStatus("CLAIMED");
             t.setClaimedBy(actor.userId);

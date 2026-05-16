@@ -51,7 +51,7 @@ import workers.SessionManager;
     public void refreshTable() {
         userListContainer.getChildren().clear();
         int i = 0;
-        List<User> users = User.getUsers();
+        List<User> users = User.getUsers("dev");
         // Filter by search query
         if (!currentSearchQuery.isEmpty()) {
             users = users.stream().filter(this::userMatchesSearch).collect(Collectors.toList());

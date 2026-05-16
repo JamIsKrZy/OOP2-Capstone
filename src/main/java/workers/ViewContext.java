@@ -4,8 +4,7 @@ package workers;
 public final class ViewContext {
 
     public enum TicketViewMode {
-        AVAILABLE,
-        MY_TASKS
+        AVAILABLE
     }
 
     public static TicketViewMode ticketMode = TicketViewMode.AVAILABLE;

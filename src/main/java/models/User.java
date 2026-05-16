@@ -37,9 +37,10 @@ public class User {
 
     private static final com.fasterxml.jackson.databind.ObjectMapper OBJECT_MAPPER = new com.fasterxml.jackson.databind.ObjectMapper();
 
-    public static List<User> getUsers() {
+    public static List<User> getUsers(String type) {
         try {
-            String json = Service.APIClient.get("/user/members?type=dev");
+            String typeParam = (type != null && type.length() >= 3) ? type.toLowerCase().substring(0, 3) : type.toLowerCase();
+            String json = Service.APIClient.get("/user/members?type=" + typeParam);
             return OBJECT_MAPPER.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<List<User>>() {});
         } catch (Exception e) {
             e.printStackTrace();

@@ -18,14 +18,15 @@
          <!-- EQUAL COLUMNS - MAXIMIZED HEIGHT -->
          <GridPane hgap="15" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
              <columnConstraints>
-                 <ColumnConstraints percentWidth="25"/><ColumnConstraints percentWidth="25"/>
-                 <ColumnConstraints percentWidth="25"/><ColumnConstraints percentWidth="25"/>
+                 <ColumnConstraints percentWidth="20"/><ColumnConstraints percentWidth="20"/>
+                 <ColumnConstraints percentWidth="20"/><ColumnConstraints percentWidth="20"/>
+                 <ColumnConstraints percentWidth="20"/>
              </columnConstraints>
              <rowConstraints>
                  <RowConstraints vgrow="ALWAYS" />
              </rowConstraints>
 
-             <VBox styleClass="equal-column" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS">
+             <VBox fx:id="colOpenContainer" styleClass="equal-column" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS">
                  <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="OPEN" styleClass="column-title-open"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countOpen" text="0" styleClass="column-count-badge"/></HBox>
                  <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colOpen" spacing="12"/></ScrollPane>
              </VBox>
@@ -43,6 +44,11 @@
              <VBox styleClass="equal-column" GridPane.columnIndex="3" GridPane.vgrow="ALWAYS">
                  <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="APPROVED" styleClass="column-title-approved"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countApproved" text="0" styleClass="column-count-badge"/></HBox>
                  <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colApproved" spacing="12"/></ScrollPane>
+             </VBox>
+
+             <VBox styleClass="equal-column" GridPane.columnIndex="4" GridPane.vgrow="ALWAYS">
+                 <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 10 0;"><Label text="CLOSED" styleClass="column-title-closed" style="-fx-text-fill: #9ca3af;"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="countClosed" text="0" styleClass="column-count-badge"/></HBox>
+                 <ScrollPane fitToWidth="true" styleClass="kanban-scroll" VBox.vgrow="ALWAYS"><VBox fx:id="colClosed" spacing="12"/></ScrollPane>
              </VBox>
          </GridPane>
 
