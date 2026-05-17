@@ -8,7 +8,7 @@
     <VBox spacing="0" styleClass="list-table-container" VBox.vgrow="ALWAYS">
         <VBox spacing="15" style="-fx-padding: 25;">
             <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label text="Manage Users" styleClass="board-header-title"/><Region HBox.hgrow="ALWAYS"/><TextField fx:id="userSearchField" promptText="Search users..." prefWidth="350" styleClass="search-field"/><Button text="+ Add User" styleClass="btn, btn-primary" onAction="#openAddUserModal"/>
+                <Label text="Manage Users" styleClass="board-header-title"/><Region HBox.hgrow="ALWAYS"/><TextField fx:id="userSearchField" promptText="Search users..." prefWidth="350" styleClass="search-field"/>
             </HBox>
             <HBox spacing="20" style="-fx-padding: 10 0 0 0;">
                 <Label text="NAME" prefWidth="250" styleClass="column-header-label"/><Label text="EMAIL" prefWidth="250" styleClass="column-header-label"/><Label text="ROLE" prefWidth="150" styleClass="column-header-label"/><Label text="STATUS" prefWidth="100" styleClass="column-header-label"/><Label text="ACTION" prefWidth="300" styleClass="column-header-label"/>
