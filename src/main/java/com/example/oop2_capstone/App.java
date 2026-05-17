@@ -54,6 +54,11 @@ public class App extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop() {
+        System.exit(0);
+    }
+
     private String extract(String json, String key) {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile("\"" + key + "\":\\s*\"?([^\",}]*)\"?");
         java.util.regex.Matcher m = p.matcher(json);
