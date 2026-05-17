@@ -211,7 +211,11 @@ public class APIClient {
 
     private static class Holder {
         private static final HttpClient INSTANCE = HttpClient.newBuilder()
-                .executor(java.util.concurrent.Executors.newFixedThreadPool(10))
+                .executor(java.util.concurrent.Executors.newFixedThreadPool(10, r -> {
+                    Thread t = new Thread(r);
+                    t.setDaemon(true);
+                    return t;
+                }))
                 .connectTimeout(Duration.ofSeconds(10))
                 .cookieHandler(cookieManager)
                 .build();
