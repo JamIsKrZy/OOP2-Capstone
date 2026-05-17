@@ -94,7 +94,7 @@ public class MainController {
     private void applyRoleBasedAccess() {
         User u = SessionManager.getLoggedUser();
         if (u == null) return;
-        boolean isPm = "Project Manager".equals(u.roleName);
+        boolean isPm = "Project Manager".equalsIgnoreCase(u.roleName) || "PROJECT_MANAGER".equalsIgnoreCase(u.roleName);
         adminSystemSection.setVisible(isPm);
         adminSystemSection.setManaged(isPm);
         adminReportsSection.setVisible(true);

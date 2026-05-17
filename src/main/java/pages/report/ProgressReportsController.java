@@ -39,8 +39,8 @@ public class ProgressReportsController {
 
         int rank = 1;
         for (User u : users) {
-            if (roleFilter.equals(u.roleName)) {
-                reportsContainer.getChildren().add(createReportCard(u, roleFilter.equals("Developer"), rank));
+            if (roleFilter.equalsIgnoreCase(u.roleName)) {
+                reportsContainer.getChildren().add(createReportCard(u, roleFilter.equalsIgnoreCase("Developer"), rank));
                 rank++;
             }
         }

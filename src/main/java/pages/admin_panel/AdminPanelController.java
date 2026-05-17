@@ -54,10 +54,12 @@ import workers.SessionManager;
         userListContainer.getChildren().clear();
         int i = 0;
         List<User> users = User.getUsers("all");
-        // Filter by search query
-        if (!currentSearchQuery.isEmpty()) {
-            users = users.stream().filter(this::userMatchesSearch).collect(Collectors.toList());
-        }
+        // Filter by search query and remove self
+        User self = SessionManager.getLoggedUser();
+        users = users.stream()
+                .filter(this::userMatchesSearch)
+                .filter(u -> self == null || !u.userId.equals(self.userId))
+                .collect(Collectors.toList());
         for (User u : users) {
             HBox row = createUserRow(u);
             if (i % 2 != 0) row.getStyleClass().add("list-row-alt");
