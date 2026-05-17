@@ -14,7 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import models.User;
-import pages.notification_popup.NotificationPopupController;
 import workers.AppPrefs;
 import workers.SessionManager;
 import workers.ViewContext;
@@ -26,10 +25,10 @@ public class MainController {
         return instance;
     }
 
-    @FXML private Button btnNavAvailable, btnNavMyTasks, btnNavReports, btnNavAdmin;
-    @FXML private VBox adminReportsSection, adminSystemSection, myTasksSection;
+    @FXML private Button btnNavAvailable, btnNavReports, btnNavAdmin;
+    @FXML private VBox adminReportsSection, adminSystemSection;
     @FXML private StackPane contentArea;
-    @FXML private Label lblBreadcrumbCurrent, lblNotificationCount, sidebarUserName, sidebarUserRole, topbarUserName, topbarUserRole;
+    @FXML private Label lblBreadcrumbCurrent, sidebarUserName, sidebarUserRole, topbarUserName, topbarUserRole;
     @FXML private Text sidebarAvatarText;
 
     @FXML
@@ -95,9 +94,7 @@ public class MainController {
     private void applyRoleBasedAccess() {
         User u = SessionManager.getLoggedUser();
         if (u == null) return;
-        boolean isPm = "Project Manager".equals(u.roleName);
-        myTasksSection.setVisible(!isPm);
-        myTasksSection.setManaged(!isPm);
+        boolean isPm = "Project Manager".equalsIgnoreCase(u.roleName) || "PROJECT_MANAGER".equalsIgnoreCase(u.roleName);
         adminSystemSection.setVisible(isPm);
         adminSystemSection.setManaged(isPm);
         adminReportsSection.setVisible(true);
@@ -123,16 +120,11 @@ public class MainController {
         setView("/app/AdminPanel.fxml");
     }
 
+
     @FXML
-    private void navMyTasks() {
-        User u = SessionManager.getLoggedUser();
-        if (u != null && "QA".equals(u.roleName)) {
-            lblBreadcrumbCurrent.setText("Review Queue");
-        } else {
-            lblBreadcrumbCurrent.setText("My Tasks");
-        }
-        ViewContext.ticketMode = ViewContext.TicketViewMode.MY_TASKS;
-        setView("/app/TicketBoard.fxml");
+    public void navProfile() {
+        lblBreadcrumbCurrent.setText("My Profile");
+        setView("/app/Profile.fxml");
     }
 
     @FXML
@@ -151,25 +143,4 @@ public class MainController {
         }
     }
 
-    private NotificationPopupController notificationPopupController;
-
-    @FXML
-    private void toggleNotifications(javafx.scene.input.MouseEvent event) {
-        if (notificationPopupController == null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/NotificationPopup.fxml"));
-                javafx.scene.Parent root = loader.load();
-
-                notificationPopupController = loader.getController();
-             } catch (Exception e) {
-                e.printStackTrace();
-             }
-          }
-
-        if (notificationPopupController.isPopupShown()) {
-            notificationPopupController.closePopup();
-         } else {
-            notificationPopupController.showNotificationsPopup(event);
-         }
-      }
 }

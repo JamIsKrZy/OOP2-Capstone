@@ -50,7 +50,7 @@ public class DetailRenderer {
         attrs.getChildren().add(row("⚠", "Priority", createPill(t.getPriority(), priorityStyleForPriority(t.getPriority()))));
         attrs.getChildren().add(row("📅", "Date Added", new Label(t.getDate_added())));
 
-        User assigneeUser = MockDataProvider.findUserById(t.getClaimedBy());
+        User assigneeUser = User.findUserById(t.getClaimedBy());
         if (assigneeUser != null) {
             attrs.getChildren().add(row("👤", "Claimed By",
                     new Label(assigneeUser.username + "\n" + assigneeUser.roleName)));
@@ -64,12 +64,18 @@ public class DetailRenderer {
             attrs.getChildren().add(row("🕐", "Date Closed", new Label(t.getDate_closed())));
         }
 
-        pane.getChildren().addAll(header, idHeader, content, attrs);
-
         VBox actions = buildActions(t, actor, onRefresh);
+        
+        Label roleDebug = new Label("Logged as: " + (actor != null ? actor.roleName : "Guest"));
+        roleDebug.setStyle("-fx-text-fill: #9ca3af; -fx-font-size: 10px;");
+
+        pane.getChildren().add(roleDebug);
+
         if (!actions.getChildren().isEmpty()) {
             pane.getChildren().add(actions);
         }
+
+        pane.getChildren().addAll(header, idHeader, content, attrs);
     }
 
     private static VBox buildActions(Ticket t, User actor, Runnable onRefresh) {
@@ -105,8 +111,14 @@ public class DetailRenderer {
         }
         if (TicketWorkflow.canResolveTicket(actor, t)) {
             return mkButton("Mark as Resolved", () -> {
-                TicketWorkflow.resolve(t, actor);
-                onRefresh.run();
+                javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog();
+                dialog.setTitle("Resolve Ticket");
+                dialog.setHeaderText("Submit Pull Request URL");
+                dialog.setContentText("PR URL:");
+                dialog.showAndWait().ifPresent(prUrl -> {
+                    TicketWorkflow.resolve(t, actor, prUrl);
+                    onRefresh.run();
+                });
             });
         }
         if (TicketWorkflow.canApprove(actor, t)) {
@@ -128,7 +140,13 @@ public class DetailRenderer {
         if (!TicketWorkflow.canDemote(actor, t)) return null;
         String label = demoteLabel(t.getStatus());
         return mkButton(label, () -> {
-            TicketWorkflow.demote(t, actor);
+            if ("PENDING-REVIEW".equals(t.getStatus())) {
+                TicketWorkflow.unresolve(t, actor);
+            } else if ("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) {
+                TicketWorkflow.unreview(t, actor);
+            } else {
+                TicketWorkflow.demote(t, actor);
+            }
             onRefresh.run();
         });
     }
@@ -138,7 +156,10 @@ public class DetailRenderer {
             case "CLAIMED":
                 return "Demote to Open";
             case "PENDING-REVIEW":
-                return "Demote to Claimed";
+                return "Unresolve (Back to Claimed)";
+            case "REVIEWED":
+            case "RESOLVED":
+                return "Unreview (Back to Pending)";
             default:
                 return "Demote";
         }

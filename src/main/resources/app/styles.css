@@ -339,42 +339,59 @@
 /* --- Phase 6: Login Page --- */
 
 .login-root {
-      -fx-background-color: #f3f4f6; /* Subtle grey background for the whole screen */
+      -fx-background-color: #0f172a; /* Deep slate background */
 }
 
 .login-card {
-      -fx-background-color: white;
-      -fx-background-radius: 20;
-      -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 50, 0, 0, 20);
+      -fx-background-color: rgba(255, 255, 255, 0.95);
+      -fx-background-radius: 24;
+      -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 60, 0, 0, 30);
+      -fx-border-color: rgba(255,255,255,0.2);
+      -fx-border-radius: 24;
+      -fx-border-width: 1.5;
 }
 
 /* Left Side (Form) */
-.login-left-pane { -fx-padding: 60; }
-.login-title { -fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #111827; }
-.login-subtitle { -fx-font-size: 16px; -fx-text-fill: #6b7280; }
+.login-left-pane { -fx-padding: 70; }
+.login-title { -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #111827; }
+.login-subtitle { -fx-font-size: 17px; -fx-text-fill: #6b7280; -fx-line-spacing: 4; }
 
 /* Right Side (Branding/Gradient) */
 .login-right-pane {
-      -fx-background-color: linear-gradient(to bottom right, #0f172a, #1e293b, #334155);
-      -fx-background-radius: 0 20 20 0;
-      -fx-padding: 60;
+      -fx-background-color: linear-gradient(to bottom right, #4f46e5, #5865f2, #8b5cf6);
+      -fx-background-radius: 0 24 24 0;
+      -fx-padding: 70;
 }
 
-.quote-label { -fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white; -fx-wrap-text: true; -fx-line-spacing: 5; }
-.quote-sub { -fx-font-size: 16px; -fx-text-fill: #94a3b8; -fx-wrap-text: true; }
-.teams-say { -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 12px; -fx-letter-spacing: 2px; }
+.quote-label { -fx-font-size: 38px; -fx-font-weight: 900; -fx-text-fill: white; -fx-wrap-text: true; -fx-line-spacing: 6; }
+.quote-sub { -fx-font-size: 17px; -fx-text-fill: rgba(255,255,255,0.8); -fx-wrap-text: true; }
+.teams-say { -fx-text-fill: rgba(255,255,255,0.6); -fx-font-weight: bold; -fx-font-size: 13px; -fx-letter-spacing: 2px; }
 
-/* Sign in Button */
-.btn-login {
-      -fx-background-color: #4f46e5;
+/* Discord Login Button */
+.btn-discord {
+      -fx-background-color: #5865F2; /* Discord Blurple */
       -fx-text-fill: white;
       -fx-font-weight: bold;
-      -fx-font-size: 16px;
-      -fx-padding: 14;
-      -fx-background-radius: 12;
+      -fx-font-size: 18px;
+      -fx-padding: 18 30;
+      -fx-background-radius: 14;
       -fx-cursor: hand;
+      -fx-effect: dropshadow(three-pass-box, rgba(88, 101, 242, 0.4), 15, 0, 0, 5);
 }
-.btn-login:hover { -fx-background-color: #4338ca; }
+.btn-discord:hover {
+      -fx-background-color: #4752c4;
+      -fx-effect: dropshadow(three-pass-box, rgba(88, 101, 242, 0.6), 20, 0, 0, 8);
+}
+
+.waiting-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4b5563;
+    -fx-padding: 10 0;
+}
+
+.status-info { -fx-text-fill: #059669; -fx-font-weight: bold; }
+.status-error { -fx-text-fill: #dc2626; -fx-font-weight: bold; }
 
 .forgot-link { -fx-text-fill: #4f46e5; -fx-font-weight: bold; -fx-cursor: hand; }
 .forgot-link:hover { -fx-underline: true; }

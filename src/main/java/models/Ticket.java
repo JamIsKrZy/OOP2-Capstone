@@ -1,5 +1,9 @@
 package models;
 
+import Service.APIClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
 
 public class Ticket {
@@ -16,9 +20,14 @@ public class Ticket {
         private String claimedBy;
 
         private String closedBy;
+        @com.fasterxml.jackson.annotation.JsonProperty("dateClosed")
         private String date_closed; // new update
+        @com.fasterxml.jackson.annotation.JsonProperty("dateAdded")
         private String date_added; // new update
 
+        private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+        public Ticket() {}
 
         public Ticket(String ticketId, String discordThreadId,
                       String title, String description, String status,
@@ -50,7 +59,7 @@ public class Ticket {
             switch (this.status){
                 case "OPEN" -> {}
                 case "CLAIMED" -> {}
-                case "PENDING-REVIEW" -> {}
+                case "PENDING-REVIEW", "IN_REVIEW" -> {}
                 case "REVIEWED" -> {}
                 case "RESOLVED" -> {}
                 case "CLOSED" -> {}
@@ -90,19 +99,67 @@ public class Ticket {
         public void setTicketId(String ticketId) { this.ticketId = ticketId; }
 
     public static List<Ticket> getTickets(){
-        throw new UnsupportedOperationException("Not yet Implemented!");
+        String request_body;
+        List<Ticket> tickets = null;
+        try {
+            request_body = APIClient.get("tickets/list");
+            if (request_body != null && request_body.startsWith("[")) {
+                tickets = OBJECT_MAPPER.readValue(request_body, new TypeReference<List<Ticket>>() {});
+            } else {
+                System.out.println("API responded with non-JSON or error: " + request_body);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse tickets: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return tickets ;
     }
 
     public static Ticket getTicket(int id){
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    public void push(){
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public void push() {
+        try {
+            String json = OBJECT_MAPPER.writeValueAsString(this);
+            APIClient.patch("tickets/" + this.ticketId, json);
+        } catch (Exception e) {
+            System.err.println("Failed to push ticket: " + e.getMessage());
+        }
     }
 
-    public void fetch(){
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public void fetch() {
+        try {
+            String json = APIClient.get("tickets/" + this.ticketId);
+            Ticket updated = OBJECT_MAPPER.readValue(json, Ticket.class);
+            updateFrom(updated);
+        } catch (Exception e) {
+            System.err.println("Failed to fetch ticket: " + e.getMessage());
+        }
+    }
+
+    public static Ticket create(Ticket t) {
+        try {
+            String json = OBJECT_MAPPER.writeValueAsString(t);
+            String response = APIClient.post("tickets", json);
+            return OBJECT_MAPPER.readValue(response, Ticket.class);
+        } catch (Exception e) {
+            System.err.println("Failed to create ticket: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void updateFrom(Ticket other) {
+        this.title = other.title;
+        this.description = other.description;
+        this.status = other.status;
+        this.priority = other.priority;
+        this.categories = other.categories;
+        this.claimedBy = other.claimedBy;
+        this.prUrl = other.prUrl;
+        this.closedBy = other.closedBy;
+        this.date_closed = other.date_closed;
     }
 
 

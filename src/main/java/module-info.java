@@ -6,6 +6,10 @@ module com.example.oop2_capstone {
     requires org.kordamp.bootstrapfx.core;
     requires java.net.http;
     requires java.prefs;
+    requires io.github.cdimascio.dotenv.java;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
+    requires java.desktop;
 
     opens com.example.oop2_capstone to javafx.fxml;
     opens models;
@@ -14,7 +18,6 @@ module com.example.oop2_capstone {
     opens pages.ticket_board;
     opens pages.ticket_list;
     opens pages.report;
-    opens pages.notification_popup;
     opens pages.admin_panel;
     opens pages.add_user;
     opens pages.create_ticket;
@@ -27,7 +30,6 @@ module com.example.oop2_capstone {
     exports pages.ticket_board;
     exports pages.ticket_list;
     exports pages.report;
-    exports pages.notification_popup;
     exports pages.admin_panel;
     exports pages.add_user;
     exports pages.create_ticket;

@@ -19,7 +19,6 @@ import models.Ticket;
 import models.User;
 import pages.dashboard.MainController;
 import workers.DetailRenderer;
-import workers.MockDataProvider;
 import workers.SessionManager;
 import workers.ViewContext;
 
@@ -28,8 +27,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TicketBoardController {
-    @FXML private VBox colOpen, colInProgress, colPendingQA, colApproved, detailsPanel;
-    @FXML private Label countOpen, countInProgress, countPendingQA, countApproved, lblActiveTicketCount, lblPageTitle;
+    @FXML private VBox colOpen, colInProgress, colPendingQA, colApproved, colClosed, detailsPanel;
+    @FXML private Label countOpen, countInProgress, countPendingQA, countApproved, countClosed, lblActiveTicketCount, lblPageTitle;
     @FXML private Button btnCreateTicket;
      @FXML private TextField boardSearchField;
 
@@ -46,12 +45,8 @@ public class TicketBoardController {
          btnCreateTicket.setManaged(showCreate);
 
          if (lblPageTitle != null) {
-             if (ViewContext.ticketMode == ViewContext.TicketViewMode.MY_TASKS && u != null) {
-                 lblPageTitle.setText("QA".equals(u.roleName) ? "Review Queue" : "My Tasks");
-              } else {
-                 lblPageTitle.setText("Board");
-              }
-          }
+             lblPageTitle.setText("Board");
+         }
 
          refreshBoard();
       }
@@ -68,7 +63,7 @@ public class TicketBoardController {
      private boolean ticketMatchesBoardSearch(Ticket t) {
          if (boardSearchQuery.isEmpty()) return true;
          String cats = t.getCategories() != null ? String.join(", ", t.getCategories()) : "";
-         User u = MockDataProvider.findUserById(t.getClaimedBy());
+         User u = User.findUserById(t.getClaimedBy());
          String assigneeName = u != null ? u.username : "Unassigned";
          
          return (t.getTitle() != null && t.getTitle().toLowerCase().contains(boardSearchQuery))
@@ -90,6 +85,7 @@ public class TicketBoardController {
          colInProgress.getChildren().clear();
          colPendingQA.getChildren().clear();
          colApproved.getChildren().clear();
+         colClosed.getChildren().clear();
 
          for (Ticket t : tickets) {
              VBox card = createCard(t);
@@ -104,11 +100,15 @@ public class TicketBoardController {
                      colInProgress.getChildren().add(card);
                      break;
                  case "PENDING-REVIEW":
+                 case "IN_REVIEW":
                      colPendingQA.getChildren().add(card);
                      break;
                  case "REVIEWED":
                  case "RESOLVED":
                      colApproved.getChildren().add(card);
+                     break;
+                 case "CLOSED":
+                     colClosed.getChildren().add(card);
                      break;
                  default:
                      break;
@@ -118,26 +118,8 @@ public class TicketBoardController {
        }
 
     private List<Ticket> visibleTickets() {
-        List<Ticket> all = MockDataProvider.getTickets();
-        if (ViewContext.ticketMode == ViewContext.TicketViewMode.AVAILABLE) {
-            return all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
-        }
-        return filterMyTasks(all, SessionManager.getLoggedUser());
-    }
-
-    private List<Ticket> filterMyTasks(List<Ticket> all, User u) {
-        if (u == null) return new ArrayList<>();
-        List<Ticket> nonClosed = all.stream().filter(t -> !"CLOSED".equals(t.getStatus())).collect(Collectors.toList());
-        if ("Developer".equals(u.roleName)) {
-            return nonClosed.stream().filter(t -> u.userId.equals(t.getClaimedBy())).collect(Collectors.toList());
-        }
-        if ("QA".equals(u.roleName)) {
-            return nonClosed.stream().filter(t ->
-                     "PENDING-REVIEW".equals(t.getStatus())
-                            || (("REVIEWED".equals(t.getStatus()) || "RESOLVED".equals(t.getStatus())) && u.userId.equals(t.getClosedBy()))
-            ).collect(Collectors.toList());
-        }
-        return new ArrayList<>();
+        List<Ticket> all = Ticket.getTickets();
+        return all != null ? all : new ArrayList<>();
     }
 
     private void updateCounts() {
@@ -145,6 +127,7 @@ public class TicketBoardController {
         countInProgress.setText(String.valueOf(colInProgress.getChildren().size()));
         countPendingQA.setText(String.valueOf(colPendingQA.getChildren().size()));
         countApproved.setText(String.valueOf(colApproved.getChildren().size()));
+        countClosed.setText(String.valueOf(colClosed.getChildren().size()));
     }
 
     private VBox createCard(Ticket t) {
