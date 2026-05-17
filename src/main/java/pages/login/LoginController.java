@@ -54,7 +54,7 @@ public class LoginController {
         APIClient.setBaseUrl(baseUrl);
         AppPrefs.prefs().put("BASE_URL", baseUrl); // Pre-save attempt
 
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
                 // Initial call to get the OAuth URL and sessionId
                 String loginJson = APIClient.get("/auth/login");
@@ -89,7 +89,9 @@ public class LoginController {
             } catch (Exception e) {
                 showError("Connection error: " + e.getMessage());
             }
-        }).start();
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private boolean openUrl(String url) {
@@ -115,7 +117,11 @@ public class LoginController {
 
     private void startPolling(String sessionId, Stage stage) {
         if (poller != null) poller.shutdownNow();
-        poller = Executors.newSingleThreadScheduledExecutor();
+        poller = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
 
         poller.scheduleAtFixedRate(() -> {
             try {
