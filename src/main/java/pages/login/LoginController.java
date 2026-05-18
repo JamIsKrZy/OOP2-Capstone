@@ -67,7 +67,8 @@ public class LoginController {
                 String sessionId = extract(loginJson, "sessionId");
 
                 if (oauthUrl.isEmpty() || sessionId.isEmpty()) {
-                    showError("Invalid server response. Please try again.");
+                    String preview = (loginJson.length() > 50) ? loginJson.substring(0, 50) + "..." : loginJson;
+                    showError("Invalid server response. Check your URL. Received: " + preview);
                     return;
                 }
 

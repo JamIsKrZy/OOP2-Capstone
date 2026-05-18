@@ -63,6 +63,7 @@ public class APIClient {
         );
 
         saveSession();
+        validateResponse(response);
         return response.body();
     }
 
@@ -83,6 +84,7 @@ public class APIClient {
         );
 
         saveSession();
+        validateResponse(response);
         return response.body();
     }
 
@@ -103,6 +105,7 @@ public class APIClient {
         );
 
         saveSession();
+        validateResponse(response);
         return response.body();
     }
 
@@ -122,6 +125,7 @@ public class APIClient {
         );
 
         saveSession();
+        validateResponse(response);
         return response.body();
     }
 
@@ -198,6 +202,15 @@ public class APIClient {
         // Associate with the base URI so it's sent on all /api/* requests
         cookieManager.getCookieStore().add(URI.create(baseUrl), cookie);
         saveSession();
+    }
+
+    private static void validateResponse(HttpResponse<String> response) throws Exception {
+        int status = response.statusCode();
+        if (status >= 400) {
+            String body = response.body();
+            String preview = (body != null && body.length() > 200) ? body.substring(0, 200) + "..." : body;
+            throw new Exception("HTTP " + status + ": " + preview);
+        }
     }
 
     public static void clearSession() {
